@@ -161,7 +161,7 @@ public class GameControllerTest {
         controller.movePiece(board.getSquare(6, 4).getPiece(), board.getSquare(4, 4));
         controller.movePiece(board.getSquare(1, 5).getPiece(), board.getSquare(3, 5));
         controller.movePiece(board.getSquare(7, 3).getPiece(), board.getSquare(3, 7));
-        assertTrue(controller.isInCheck(Color.BLACK));
+        assertTrue(controller.isInCheck(controller.getBlackPlayer()));
         assertEquals(GameState.ACTIVE, controller.getGameState());
     }
 
@@ -170,14 +170,14 @@ public class GameControllerTest {
         controller.movePiece(board.getSquare(6, 4).getPiece(), board.getSquare(4, 4));
         controller.movePiece(board.getSquare(1, 5).getPiece(), board.getSquare(3, 5));
         controller.movePiece(board.getSquare(7, 3).getPiece(), board.getSquare(3, 7));
-        assertTrue(controller.isInCheck(Color.BLACK));
+        assertTrue(controller.isInCheck(controller.getBlackPlayer()));
 
         Piece a7Pawn = board.getSquare(1, 0).getPiece();
         assertFalse(controller.movePiece(a7Pawn, board.getSquare(2, 0)));
 
         Piece g7Pawn = board.getSquare(1, 6).getPiece();
         assertTrue(controller.movePiece(g7Pawn, board.getSquare(2, 6)));
-        assertFalse(controller.isInCheck(Color.BLACK));
+        assertFalse(controller.isInCheck(controller.getBlackPlayer()));
     }
 
     @Test
@@ -187,6 +187,7 @@ public class GameControllerTest {
         controller.movePiece(board.getSquare(6, 6).getPiece(), board.getSquare(4, 6));
         controller.movePiece(board.getSquare(0, 3).getPiece(), board.getSquare(4, 7));
         assertEquals(GameState.BLACK_WON, controller.getGameState());
+        assertEquals(WinReason.CHECKMATE, controller.getWinReason());
     }
 
     @Test
@@ -199,6 +200,7 @@ public class GameControllerTest {
         controller.movePiece(board.getSquare(0, 6).getPiece(), board.getSquare(2, 5));
         controller.movePiece(board.getSquare(3, 7).getPiece(), board.getSquare(1, 5));
         assertEquals(GameState.WHITE_WON, controller.getGameState());
+        assertEquals(WinReason.CHECKMATE, controller.getWinReason());
     }
 
     @Test
@@ -237,7 +239,94 @@ public class GameControllerTest {
 
     @Test
     public void testNoCheckAtStart() {
-        assertFalse(controller.isInCheck(Color.WHITE));
-        assertFalse(controller.isInCheck(Color.BLACK));
+        assertFalse(controller.isInCheck(controller.getWhitePlayer()));
+        assertFalse(controller.isInCheck(controller.getBlackPlayer()));
+    }
+
+    @Test
+    public void testWinReasonNullAtStart() {
+        assertNull(controller.getWinReason());
+    }
+
+    @Test
+    public void testDrawReasonNullAtStart() {
+        assertNull(controller.getDrawReason());
+    }
+
+    @Test
+    public void testWhiteResignsBlackWins() {
+        assertEquals(Color.WHITE, controller.getCurrentPlayer().getColor());
+        controller.resign();
+        assertEquals(GameState.BLACK_WON, controller.getGameState());
+        assertEquals(WinReason.RESIGN, controller.getWinReason());
+    }
+
+    @Test
+    public void testBlackResignsWhiteWins() {
+        controller.movePiece(board.getSquare(6, 4).getPiece(), board.getSquare(4, 4));
+        assertEquals(Color.BLACK, controller.getCurrentPlayer().getColor());
+        controller.resign();
+        assertEquals(GameState.WHITE_WON, controller.getGameState());
+        assertEquals(WinReason.RESIGN, controller.getWinReason());
+    }
+
+    @Test
+    public void testResignDoesNothingWhenGameOver() {
+        controller.resign();
+        assertEquals(GameState.BLACK_WON, controller.getGameState());
+        assertEquals(WinReason.RESIGN, controller.getWinReason());
+        // try resigning again — should not flip result
+        controller.resign();
+        assertEquals(GameState.BLACK_WON, controller.getGameState());
+        assertEquals(WinReason.RESIGN, controller.getWinReason());
+    }
+
+    @Test
+    public void testCannotMoveAfterResign() {
+        controller.resign();
+        Piece pawn = board.getSquare(6, 4).getPiece();
+        assertFalse(controller.movePiece(pawn, board.getSquare(4, 4)));
+    }
+
+    @Test
+    public void testDrawByAgreement() {
+        controller.drawByAgreement();
+        assertEquals(GameState.DRAW, controller.getGameState());
+        assertEquals(DrawReason.AGREEMENT, controller.getDrawReason());
+    }
+
+    @Test
+    public void testDrawByAgreementDoesNothingWhenGameOver() {
+        controller.resign();
+        assertEquals(GameState.BLACK_WON, controller.getGameState());
+        controller.drawByAgreement();
+        assertEquals(GameState.BLACK_WON, controller.getGameState());
+        assertNull(controller.getDrawReason());
+    }
+
+    @Test
+    public void testCannotMoveAfterDrawByAgreement() {
+        controller.drawByAgreement();
+        Piece pawn = board.getSquare(6, 4).getPiece();
+        assertFalse(controller.movePiece(pawn, board.getSquare(4, 4)));
+    }
+
+    @Test
+    public void testResignDoesNothingAfterDraw() {
+        controller.drawByAgreement();
+        assertEquals(GameState.DRAW, controller.getGameState());
+        controller.resign();
+        assertEquals(GameState.DRAW, controller.getGameState());
+        assertNull(controller.getWinReason());
+    }
+
+    @Test
+    public void testFoolsMateWinReason() {
+        controller.movePiece(board.getSquare(6, 5).getPiece(), board.getSquare(4, 5));
+        controller.movePiece(board.getSquare(1, 4).getPiece(), board.getSquare(3, 4));
+        controller.movePiece(board.getSquare(6, 6).getPiece(), board.getSquare(4, 6));
+        controller.movePiece(board.getSquare(0, 3).getPiece(), board.getSquare(4, 7));
+        assertEquals(WinReason.CHECKMATE, controller.getWinReason());
+        assertNull(controller.getDrawReason());
     }
 }
