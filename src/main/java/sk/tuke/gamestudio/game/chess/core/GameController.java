@@ -379,6 +379,11 @@ public class GameController {
         winReason = WinReason.RESIGN;
     }
 
+    public void passTurn() {
+        if (gameState != GameState.ACTIVE) return;
+        switchCurrentPlayer();
+    }
+
     private void switchCurrentPlayer() {
         currentPlayer = (currentPlayer == whitePlayer) ? blackPlayer : whitePlayer;
     }
