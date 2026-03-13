@@ -29,7 +29,7 @@ public class ConsoleUI {
 
 
     public void play() {
-        boolean again = false;
+        boolean again;
         do {
             gameLoop();
 
@@ -52,76 +52,10 @@ public class ConsoleUI {
         System.out.println();
 
         while (controller.getGameState() == GameState.ACTIVE) {
-            renderBoard();
-
-            if (controller.isInCheck(controller.getCurrentPlayer())) {
-                System.out.println("  ⚠  CHECK!  ⚠");
-                System.out.println();
-            }
-
-            Color currentColor = controller.getCurrentPlayer().getColor();
-            String colorName = currentColor == Color.WHITE ? "White" : "Black";
-
-            if (drawProposedBy != null) {
-                String proposer = drawProposedBy == Color.WHITE ? "White" : "Black";
-                System.out.println("  ½  " + proposer + " proposes a draw! Type '1/2' to accept, or anything else to decline.");
-            }
-
-            System.out.print("  " + colorName + "'s turn: ");
-            String input = scanner.nextLine().trim();
-
-            if (input.equalsIgnoreCase("exit")) {
-                System.out.println();
-                System.out.println("  Game ended by player.");
-                return;
-            }
-
-            if (input.equalsIgnoreCase("resign")) {
-                controller.resign();
-                String winner = currentColor == Color.WHITE ? "Black" : "White";
-                System.out.println();
-                System.out.println("  " + colorName + " resigns. " + winner + " wins!");
-                System.out.println();
-                continue;
-            }
-
-            if (input.equalsIgnoreCase("1/2")) {
-                if (drawProposedBy == null) {
-                    drawProposedBy = currentColor;
-                    System.out.println();
-                    System.out.println("  " + colorName + " proposes a draw!");
-                    controller.passTurn();
-                } else {
-                    controller.drawByAgreement();
-                    System.out.println("  Draw accepted!");
-                }
-                System.out.println();
-                continue;
-            }
-            if(drawProposedBy != null && !input.equalsIgnoreCase("1/2")){
-                System.out.println("  Draw proposal declined.");
-                System.out.println();
-                drawProposedBy = null;
-                controller.passTurn();
-                continue;
-            }
+            show();
 
 
-            Matcher matcher = MOVE_PATTERN.matcher(input);
-            if (!matcher.matches()) {
-                System.out.println("  Invalid move! Try again.");
-                System.out.println();
-                continue;
-            }
-
-            String[] parts = input.split("\\s+");
-            Square fromSquare = parseSquare(parts[0]);
-            Square toSquare   = parseSquare(parts[1]);
-
-            if (fromSquare == null || toSquare == null || fromSquare.getPiece() == null
-                    || !controller.movePiece(fromSquare.getPiece(), toSquare)) {
-                System.out.println("  Invalid move! Try again.");
-                System.out.println();
+            if(!handleInput()){
                 continue;
             }
 
@@ -132,9 +66,110 @@ public class ConsoleUI {
             System.out.println();
         }
 
-        renderBoard();
+        show();
         showGameResult(controller.getGameState());
         drawProposedBy = null;
+    }
+
+    private boolean handleInput(){
+        if (controller.isInCheck(controller.getCurrentPlayer())) {
+            System.out.println("  ⚠  CHECK!  ⚠");
+            System.out.println();
+        }
+
+        Color currentColor = controller.getCurrentPlayer().getColor();
+        String colorName = currentColor == Color.WHITE ? "White" : "Black";
+
+        if (drawProposedBy != null) {
+            String proposer = drawProposedBy == Color.WHITE ? "White" : "Black";
+            System.out.println("  ½  " + proposer + " proposes a draw! Type '1/2' to accept, or anything else to decline.");
+        }
+
+        System.out.print("  " + colorName + "'s turn: ");
+        String input = scanner.nextLine().trim();
+        System.out.println();
+        System.out.println("=======================================================");
+        System.out.println();
+        if (input.equalsIgnoreCase("exit")) {
+            controller.resign();
+            System.out.println();
+            System.out.println("  Game ended by player. " + colorName + " left the game");
+            System.out.println();
+
+            return false;
+        }
+
+        if (input.equalsIgnoreCase("resign")) {
+            String winner = currentColor == Color.WHITE ? "Black" : "White";
+            System.out.println();
+            System.out.println("  " + colorName + " resigns. " + winner + " wins!");
+            System.out.println();
+            controller.resign();
+            return false;
+        }
+
+        if (input.equalsIgnoreCase("1/2")) {
+            if (drawProposedBy == null) {
+                drawProposedBy = currentColor;
+                System.out.println();
+                System.out.println("  " + colorName + " proposes a draw!");
+                controller.passTurn();
+            } else {
+                controller.drawByAgreement();
+                System.out.println("  Draw accepted!");
+            }
+            System.out.println();
+            return false;
+        }
+        if(drawProposedBy != null && !input.equalsIgnoreCase("1/2")){
+            System.out.println("  Draw proposal declined.");
+            System.out.println();
+            drawProposedBy = null;
+            controller.passTurn();
+            return false;
+        }
+
+
+        Matcher matcher = MOVE_PATTERN.matcher(input);
+        if (!matcher.matches()) {
+            System.out.println("  Wrong move type! Try again.");
+            System.out.println();
+            return false;
+        }
+
+        String[] parts = input.split("\\s+");
+        Square fromSquare = parseSquare(parts[0]);
+        Square toSquare   = parseSquare(parts[1]);
+        if (fromSquare == null || toSquare == null) {
+            System.out.println("  Invalid square! Try again.");
+            System.out.println();
+            return false;
+        }
+        Piece selectedPiece = fromSquare.getPiece();
+        if (selectedPiece == null) {
+            System.out.println("  No piece on that square! Try again!");
+            System.out.println();
+            return false;
+        }
+        if (selectedPiece.getColor() != currentColor) {
+            System.out.println("  It's not your piece! Try again!");
+            System.out.println();
+            return false;
+        }
+        if (!controller.movePiece(selectedPiece, toSquare)) {
+            Piece targetPiece = toSquare.getPiece();
+            if (targetPiece != null && targetPiece.getColor() == currentColor) {
+                System.out.println("  You can't capture your own piece! Try again!");
+            } else {
+                System.out.println("  Can't move like that! Try again.");
+            }
+            if (controller.isInCheck(controller.getCurrentPlayer())) {
+                System.out.println("  (Notice that you are under check right now!)");
+            }
+            System.out.println();
+            return false;
+        }
+        return true;
     }
 
     private void handlePromotion() {
@@ -165,7 +200,7 @@ public class ConsoleUI {
         return controller.getBoard().getSquare(row, column);
     }
 
-    public void renderBoard() {
+    public void show() {
         Board board = controller.getBoard();
 
         System.out.println(FILE_LABELS);
