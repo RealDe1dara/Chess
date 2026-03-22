@@ -13,32 +13,22 @@ public class EloServiceJDBC implements EloService {
 
     public static final String SELECT_BY_PLAYER = "SELECT elo FROM elo WHERE game = ? AND player = ?";
     public static final String SELECT_TOP10 = "SELECT game, player, elo FROM elo WHERE game = ? ORDER BY elo DESC LIMIT 10";
-    public static final String UPDATE = "UPDATE elo SET elo = ? WHERE game = ? AND player = ?";
     public static final String DELETE = "DELETE FROM elo";
-    public static final String INSERT = "INSERT INTO elo (game, player, elo) VALUES (?, ?, ?)";
-
+    public static final String UPDATE =
+            "INSERT INTO elo (game, player, elo) VALUES (?, ?, ?) " +
+                    "ON CONFLICT (game, player) DO UPDATE SET elo = EXCLUDED.elo";
 
     @Override
     public void setElo(Elo elo) throws EloException {
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
 
-            int currentElo = getElo(elo.getGame(), elo.getPlayer());
 
-            if (currentElo == 100) {
-                try (PreparedStatement statement = connection.prepareStatement(INSERT)) {
-                    statement.setString(1, elo.getGame());
-                    statement.setString(2, elo.getPlayer());
-                    statement.setInt(3, elo.getElo());
-                    statement.executeUpdate();
-                }
-            } else {
-                try (PreparedStatement statement = connection.prepareStatement(UPDATE)) {
-                    statement.setInt(1, elo.getElo());
-                    statement.setString(2, elo.getGame());
-                    statement.setString(3, elo.getPlayer());
-                    statement.executeUpdate();
-                }
-            }
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(UPDATE)) {
+
+            statement.setString(1, elo.getGame());
+            statement.setString(2, elo.getPlayer());
+            statement.setInt(3, elo.getElo());
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             throw new EloException("Problem setting ELO", e);

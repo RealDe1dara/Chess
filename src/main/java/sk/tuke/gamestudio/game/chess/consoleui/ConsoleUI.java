@@ -37,6 +37,9 @@ public class ConsoleUI {
     private final RatingService ratingService = new RatingServiceJDBC();
     private final EloService eloService = new EloServiceJDBC();
 
+    private String lastMessage = "";
+    private String lastGameMessage = "";
+
     public ConsoleUI() {
         this.controller = new GameController();
         this.scanner = new Scanner(System.in);
@@ -58,167 +61,216 @@ public class ConsoleUI {
         boolean running = true;
         String game = "chess";
         while (running) {
-            System.out.println();
-            System.out.println("========== CHESS MENU ==========");
-            System.out.println("p / play        - play the game");
-            System.out.println("score top       - get top scores");
-            System.out.println("score reset     - reset scores");
-            System.out.println("comment add     - add comment(comment)");
-            System.out.println("comment list    - get comments");
-            System.out.println("comment reset   - reset comments");
-            System.out.println("rating set      - set rating(rating, player)");
-            System.out.println("rating avg      - get average rating");
-            System.out.println("rating get      - get rating(player)");
-            System.out.println("rating reset    - reset ratings");
-            System.out.println("elo top         - get top players by elo");
-            System.out.println("elo get         - get elo(player)");
-            System.out.println("elo reset       - reset players elo(don't do that pls)");
-            System.out.println("x / exit        - exit menu");
-            System.out.println("================================");
+            clearConsole();
+
+            if (!lastMessage.isEmpty()) {
+                System.out.println(lastMessage);
+                System.out.println();
+            }
+
+            printMenuHeader();
             System.out.print("Your choice: ");
 
             String choice = scanner.nextLine().trim().toLowerCase();
 
+            lastMessage = "";
 
             try {
                 switch (choice) {
                     case "p", "play" -> {
                         getPlayersNames();
+                        int timeMinutes = getTimeLimit();
                         whiteElo = eloService.getElo(game, whiteName);
                         blackElo = eloService.getElo(game, blackName);
-                        gameLoop();
-                        this.controller = new GameController();
+
+                        gameLoop(timeMinutes);
                     }
                     case "score top" -> {
                         List<Score> scores = scoreService.getTopScores(game);
                         if (scores.isEmpty()) {
-                            System.out.println("No scores yet.");
+                            lastMessage = "No scores yet.";
                         } else {
-                            System.out.println("Top scores:");
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("Top scores:\n");
                             for (Score s : scores) {
-                                System.out.println("- " + s.getPlayer() + ": " + s.getPoints() + " (" + s.getPlayedOn() + ")");
+                                sb.append("- ").append(s.getPlayer())
+                                  .append(": ").append(s.getPoints())
+                                  .append(" (").append(s.getPlayedOn()).append(")\n");
                             }
+                            lastMessage = sb.toString();
                         }
                     }
-
                     case "score reset" -> {
                         scoreService.reset();
-                        System.out.println("Scores reset done.");
+                        lastMessage = "Scores reset done.";
                     }
                     case "comment add" -> {
-
                         System.out.print("Player: ");
                         String player = scanner.nextLine().trim();
                         System.out.print("Comment text: ");
                         String text = scanner.nextLine();
-
                         commentService.addComment(new Comment(game, player, text, new Date()));
-                        System.out.println("Comment saved.");
+                        lastMessage = "Comment saved.";
                     }
-
                     case "comment list" -> {
-
                         List<Comment> comments = commentService.getComments(game);
                         if (comments.isEmpty()) {
-                            System.out.println("No comments yet.");
+                            lastMessage = "No comments yet.";
                         } else {
-                            System.out.println("Comments:");
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("Comments:\n");
                             for (Comment c : comments) {
-                                System.out.println("- " + c.getPlayer() + ": " + c.getComment() + " (" + c.getCommentedOn() + ")");
+                                sb.append("- ").append(c.getPlayer())
+                                  .append(": ").append(c.getComment())
+                                  .append(" (").append(c.getCommentedOn()).append(")\n");
                             }
+                            lastMessage = sb.toString();
                         }
                     }
                     case "comment reset" -> {
                         commentService.reset();
-                        System.out.println("Comments reset done.");
+                        lastMessage = "Comments reset done.";
                     }
-
                     case "rating set" -> {
                         System.out.print("Player: ");
                         String player = scanner.nextLine().trim();
                         System.out.print("Rating (1-5): ");
                         int value = Integer.parseInt(scanner.nextLine().trim());
                         ratingService.setRating(new Rating(game, player, value, new Date()));
-                        System.out.println("Rating saved.");
+                        lastMessage = "Rating saved.";
                     }
-
                     case "rating avg" -> {
                         int avg = ratingService.getAverageRating(game);
-                        System.out.println("Average rating for '" + game + "': " + avg);
+                        if(avg == 0){
+                            lastMessage =  "No ratings yet.";
+                        }
+                        else {
+                            lastMessage = "Average rating for '" + game + "': " + avg;
+                        }
                     }
                     case "rating get" -> {
                         System.out.print("Player: ");
                         String player = scanner.nextLine().trim();
                         int rating = ratingService.getRating(game, player);
-                        System.out.println("Rating of '" + player + "' in '" + game + "': " + rating);
+                        if(rating == 0){
+                            lastMessage = "Player '" + player + "' has not rated the game yet.";
+                        } else {
+                            lastMessage = "Rating of '" + player + "' in '" + game + "': " + rating;
+                        }
                     }
-
                     case "rating reset" -> {
                         ratingService.reset();
-                        System.out.println("Ratings reset done.");
+                        lastMessage = "Ratings reset done.";
                     }
                     case "elo top" -> {
                         List<Elo> topElo = eloService.getTopElo(game);
                         if (topElo.isEmpty()) {
-                            System.out.println("No ELOs yet.");
+                            lastMessage = "No ELOs yet.";
                         } else {
-                            System.out.println("Top players by ELO:");
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("Top players by ELO:\n");
                             for (Elo e : topElo) {
-                                System.out.println("- " + e.getPlayer() + ": " + e.getElo());
+                                sb.append("- ").append(e.getPlayer())
+                                  .append(": ").append(e.getElo())
+                                  .append("\n");
                             }
+                            lastMessage = sb.toString();
                         }
                     }
                     case "elo get" -> {
                         System.out.print("Player: ");
                         String player = scanner.nextLine().trim();
                         int elo = eloService.getElo(game, player);
-                        System.out.println("ELO of '" + player + "' in '" + game + "': " + elo);
+                        lastMessage = "ELO of '" + player + "' in '" + game + "': " + elo;
                     }
                     case "elo reset" -> {
                         eloService.reset();
-                        System.out.println("All player ELOs reset (don't do that pls).");
+                        lastMessage = "All player ELOs reset (don't do that pls).";
                     }
                     case "x", "exit" -> {
                         running = false;
-                        System.out.println("Exiting menu...");
+                        lastMessage = "Exiting menu...";
                     }
-
-                    default -> System.out.println("Unknown command. Try again.");
+                    default -> {
+                        lastMessage = "Unknown command. Try again.";
+                    }
                 }
             } catch (ScoreException | CommentException | RatingException e) {
-                    System.out.println("Service error: " + e.getMessage());
-                    } catch (NumberFormatException e) {
-                    System.out.println("Invalid number format.");
+                lastMessage = "Service error: " + e.getMessage();
+            } catch (NumberFormatException e) {
+                lastMessage = "Invalid number format.";
             }
         }
         return false;
     }
 
-    private void gameLoop(){
+    private void printMenuHeader() {
+        System.out.println();
+        System.out.println("========== CHESS MENU ==========");
+        System.out.println("p / play        - play the game");
+        System.out.println("score top       - get top scores");
+        System.out.println("score reset     - reset scores");
+        System.out.println("comment add     - add comment(comment)");
+        System.out.println("comment list    - get comments");
+        System.out.println("comment reset   - reset comments");
+        System.out.println("rating set      - set rating(rating, player)");
+        System.out.println("rating avg      - get average rating");
+        System.out.println("rating get      - get rating(player)");
+        System.out.println("rating reset    - reset ratings");
+        System.out.println("elo top         - get top players by elo");
+        System.out.println("elo get         - get elo(player)");
+        System.out.println("elo reset       - reset players elo(don't do that pls)");
+        System.out.println("x / exit        - exit menu");
+        System.out.println("================================");
+    }
+
+    private void gameLoop(int timeMinutes){
+        this.controller = timeMinutes > 0 ? new GameController(timeMinutes) : new GameController();
+        lastGameMessage = "";
         System.out.println();
         System.out.println("  ╔══════════════════════════════════╗");
         System.out.println("  ║           C H E S S              ║");
         System.out.println("  ╚══════════════════════════════════╝");
         System.out.println();
+        if (timeMinutes > 0) {
+            System.out.println("  ⏱  Time limit: " + timeMinutes + " minutes per player");
+        }
         System.out.println("  Enter moves like: e2 e4");
         System.out.println("  Commands:  '1/2' = propose draw   'resign' = resign   'exit' = stop the game");
         System.out.println();
 
         while (controller.getGameState() == GameState.ACTIVE) {
-            show();
+            if (controller.checkTimeExpired()) {
+                break;
+            }
 
+            clearConsole();
+            if (!lastGameMessage.isEmpty()) {
+                System.out.println(lastGameMessage);
+                System.out.println();
+            }
+
+            show();
 
             if(!handleInput()){
                 continue;
             }
 
+            if (controller.checkTimeExpired()) {
+                break;
+            }
+
             if (controller.isPromotionPending()) {
+                if (controller.checkTimeExpired()) {
+                    break;
+                }
                 handlePromotion();
             }
 
             System.out.println();
         }
 
+        clearConsole();
         show();
         showGameResult(controller.getGameState());
         drawProposedBy = null;
@@ -226,9 +278,10 @@ public class ConsoleUI {
     }
 
     private boolean handleInput(){
+        StringBuilder msg = new StringBuilder();
+
         if (controller.isInCheck(controller.getCurrentPlayer())) {
-            System.out.println("  ⚠  CHECK!  ⚠");
-            System.out.println();
+            msg.append("  ⚠  CHECK!  ⚠\n\n");
         }
 
         Color currentColor = controller.getCurrentPlayer().getColor();
@@ -236,7 +289,12 @@ public class ConsoleUI {
 
         if (drawProposedBy != null) {
             String proposer = drawProposedBy == Color.WHITE ? "White" : "Black";
-            System.out.println("  ½  " + proposer + " proposes a draw! Type '1/2' to accept, or anything else to decline.");
+            msg.append("  ½  ").append(proposer)
+               .append(" proposes a draw! Type '1/2' to accept, or anything else to decline.\n");
+        }
+
+        if (!msg.isEmpty()) {
+            System.out.print(msg);
         }
 
         System.out.print("  " + colorName + "'s turn: ");
@@ -244,50 +302,47 @@ public class ConsoleUI {
         System.out.println();
         System.out.println("=======================================================");
         System.out.println();
+
+        lastGameMessage = "";
+
+        if (controller.checkTimeExpired()) {
+            lastGameMessage = "  ⏱  Time expired.";
+            return false;
+        }
         if (input.equalsIgnoreCase("exit")) {
             controller.resign();
-            System.out.println();
-            System.out.println("  Game ended by player. " + colorName + " left the game");
-            System.out.println();
-
+            lastGameMessage = "  Game ended by player. " + colorName + " left the game";
             return false;
         }
 
         if (input.equalsIgnoreCase("resign")) {
             String winner = currentColor == Color.WHITE ? "Black" : "White";
-            System.out.println();
-            System.out.println("  " + colorName + " resigns. " + winner + " wins!");
-            System.out.println();
             controller.resign();
+            lastGameMessage = "  " + colorName + " resigns. " + winner + " wins!";
             return false;
         }
 
         if (input.equalsIgnoreCase("1/2")) {
             if (drawProposedBy == null) {
                 drawProposedBy = currentColor;
-                System.out.println();
-                System.out.println("  " + colorName + " proposes a draw!");
+                lastGameMessage = "  " + colorName + " proposes a draw!";
                 controller.passTurn();
             } else {
                 controller.drawByAgreement();
-                System.out.println("  Draw accepted!");
+                lastGameMessage = "  Draw accepted!";
             }
-            System.out.println();
             return false;
         }
         if(drawProposedBy != null && !input.equalsIgnoreCase("1/2")){
-            System.out.println("  Draw proposal declined.");
-            System.out.println();
+            lastGameMessage = "  Draw proposal declined.";
             drawProposedBy = null;
             controller.passTurn();
             return false;
         }
 
-
         Matcher matcher = MOVE_PATTERN.matcher(input);
         if (!matcher.matches()) {
-            System.out.println("  Wrong move type! Try again.");
-            System.out.println();
+            lastGameMessage = "  Wrong move type! Try again.";
             return false;
         }
 
@@ -295,34 +350,38 @@ public class ConsoleUI {
         Square fromSquare = parseSquare(parts[0]);
         Square toSquare   = parseSquare(parts[1]);
         if (fromSquare == null || toSquare == null) {
-            System.out.println("  Invalid square! Try again.");
-            System.out.println();
+            lastGameMessage = "  Invalid square! Try again.";
             return false;
         }
         Piece selectedPiece = fromSquare.getPiece();
         if (selectedPiece == null) {
-            System.out.println("  No piece on that square! Try again!");
-            System.out.println();
+            lastGameMessage = "  No piece on that square! Try again!";
             return false;
         }
         if (selectedPiece.getColor() != currentColor) {
-            System.out.println("  It's not your piece! Try again!");
-            System.out.println();
+            lastGameMessage = "  It's not your piece! Try again!";
             return false;
         }
+
+        if (controller.checkTimeExpired()) {
+            lastGameMessage = "  ⏱  Time expired.";
+            return false;
+        }
+
         if (!controller.movePiece(selectedPiece, toSquare)) {
             Piece targetPiece = toSquare.getPiece();
             if (targetPiece != null && targetPiece.getColor() == currentColor) {
-                System.out.println("  You can't capture your own piece! Try again!");
+                lastGameMessage = "  You can't capture your own piece! Try again!";
             } else {
-                System.out.println("  Can't move like that! Try again.");
+                lastGameMessage = "  Can't move like that! Try again.";
             }
             if (controller.isInCheck(controller.getCurrentPlayer())) {
-                System.out.println("  (Notice that you are under check right now!)");
+                lastGameMessage += "\n  (Notice that you are under check right now!)";
             }
-            System.out.println();
             return false;
         }
+
+        lastGameMessage = "";
         return true;
     }
 
@@ -357,21 +416,32 @@ public class ConsoleUI {
     public void show() {
         Board board = controller.getBoard();
 
+        final String ANSI_RESET = "\u001B[0m";
+        final String FG_WHITE   = "\u001B[1;97m";
+        final String FG_BLACK   = "\u001B[1;30m";
+
         System.out.println(FILE_LABELS);
         System.out.println(TOP_BORDER);
 
         for (int row = 0; row < 8; row++) {
             System.out.print((8 - row) + " │");
             for (int col = 0; col < 8; col++) {
-                Piece piece = board.getSquare(row, col).getPiece();
+                Square square = board.getSquare(row, col);
+                Piece piece = square.getPiece();
+
+                String fg = "";
                 String symbol;
+
                 if (piece != null) {
                     symbol = getPieceSymbol(piece);
+                    fg = (piece.getColor() == Color.WHITE) ? FG_WHITE : FG_BLACK;
                 } else {
                     boolean isDarkSquare = (row + col) % 2 != 0;
                     symbol = isDarkSquare ? "·" : " ";
+
                 }
-                System.out.print(" " + symbol + " │");
+
+                System.out.print(" " + fg + symbol + ANSI_RESET + " │");
             }
             System.out.println(" " + (8 - row));
 
@@ -382,23 +452,39 @@ public class ConsoleUI {
 
         System.out.println(BOTTOM_BORDER);
         System.out.println(FILE_LABELS);
+
+        GameTimer timer = controller.getGameTimer();
+        if (timer != null) {
+            Color activeColor = controller.getCurrentPlayer().getColor();
+            String whiteTime = formatTime(timer.getRemainingTimeMs(Color.WHITE, activeColor));
+            String blackTime = formatTime(timer.getRemainingTimeMs(Color.BLACK, activeColor));
+            System.out.println("  ⏱  White: " + whiteTime + "  |  Black: " + blackTime);
+        }
         System.out.println();
+
+    }
+
+    private String formatTime(long timeMs) {
+        long totalSeconds = timeMs / 1000;
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
     }
 
     private String getPieceSymbol(Piece piece) {
         String symbol;
         if (piece instanceof King k) {
-            symbol = k.getColor() == Color.WHITE ? "♔" : "♚";
+            symbol =  "♚";
         } else if (piece instanceof Queen q) {
-            symbol = q.getColor() == Color.WHITE ? "♕" : "♛";
+            symbol =  "♛";
         } else if (piece instanceof Rook r) {
-            symbol = r.getColor() == Color.WHITE ? "♖" : "♜";
+            symbol = "♜";
         } else if (piece instanceof Bishop b) {
-            symbol = b.getColor() == Color.WHITE ? "♗" : "♝";
+            symbol =  "♝";
         } else if (piece instanceof Knight n) {
-            symbol = n.getColor() == Color.WHITE ? "♘" : "♞";
+            symbol = "♞";
         } else if (piece instanceof Pawn p) {
-            symbol = p.getColor() == Color.WHITE ? "♙" : "♟";
+            symbol ="♟";
         } else {
             symbol = "?";
         }
@@ -408,8 +494,27 @@ public class ConsoleUI {
     private void getPlayersNames(){
         System.out.println("White player: ");
         whiteName = scanner.nextLine().trim();
-        System.out.println("Black player: ");
-        blackName = scanner.nextLine().trim();
+        do {
+            System.out.println("Black player: ");
+            blackName = scanner.nextLine().trim();
+            if(blackName.equals(whiteName)){
+                System.out.println("Black player name cannot be the same as white player name. Please enter a different name.");
+            }
+        }while(blackName.equals(whiteName));
+    }
+
+    private int getTimeLimit() {
+        System.out.println();
+        System.out.println("Do you want to play with time limit?");
+        System.out.print("Enter time limit in minutes (0 for no time limit): ");
+        try {
+            String input = scanner.nextLine().trim();
+            int minutes = Integer.parseInt(input);
+            return Math.max(0, minutes);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Playing without time limit.");
+            return 0;
+        }
     }
     private void saveScore(){
         String game = "chess";
@@ -450,29 +555,43 @@ public class ConsoleUI {
         }
     }
     public void showGameResult(GameState gameState) {
-        System.out.println("  ═══════════════════════════════════");
+        StringBuilder resultBuilder = new StringBuilder();
+        resultBuilder.append("  ═══════════════════════════════════\n");
         switch (gameState) {
             case WHITE_WON -> {
                 if (controller.getWinReason() == WinReason.RESIGN) {
-                    System.out.println("  🏳  Black resigns. White wins!  ★");
+                    resultBuilder.append("  🏳  Black resigns. White wins!  ★\n");
+                } else if (controller.getWinReason() == WinReason.TIMEOUT) {
+                    resultBuilder.append("  ⏱  Black's time expired! White wins!  ★\n");
                 } else {
-                    System.out.println("  ★  Checkmate! White wins!  ★");
+                    resultBuilder.append("  ★  Checkmate! White wins!  ★\n");
                 }
             }
             case BLACK_WON -> {
                 if (controller.getWinReason() == WinReason.RESIGN) {
-                    System.out.println("  🏳  White resigns. Black wins!  ★");
+                    resultBuilder.append("  🏳  White resigns. Black wins!  ★\n");
+                } else if (controller.getWinReason() == WinReason.TIMEOUT) {
+                    resultBuilder.append("  ⏱  White's time expired! Black wins!  ★\n");
                 } else {
-                    System.out.println("  ★  Checkmate! Black wins!  ★");
+                    resultBuilder.append("  ★  Checkmate! Black wins!  ★\n");
                 }
             }
             case DRAW -> {
                 DrawReason reason = controller.getDrawReason();
                 String reasonText = reason != null ? reason.name().replace('_', ' ').toLowerCase() : "";
-                System.out.println("  ½  Draw! " + reasonText.substring(0, 1).toUpperCase() + reasonText.substring(1) + "  ½");
+                String pretty = reasonText.isEmpty()
+                        ? "draw"
+                        : reasonText.substring(0, 1).toUpperCase() + reasonText.substring(1);
+                resultBuilder.append("  ½  Draw! ").append(pretty).append("  ½\n");
             }
-            default -> System.out.println("  Game over.");
+            default -> resultBuilder.append("  Game over.\n");
         }
-        System.out.println("  ═══════════════════════════════════");
+        resultBuilder.append("  ═══════════════════════════════════");
+
+        lastMessage = resultBuilder.toString();
+    }
+    private void clearConsole() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 }

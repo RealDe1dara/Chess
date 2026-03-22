@@ -17,6 +17,7 @@ public class GameController {
     private final Map<String, Integer> positionHistory = new HashMap<>();
     private DrawReason drawReason;
     private WinReason winReason;
+    private final GameTimer gameTimer;
 
     public GameController() {
         this.board = new Board();
@@ -24,8 +25,33 @@ public class GameController {
         this.blackPlayer = new Player(Color.BLACK);
         this.currentPlayer = whitePlayer;
         this.gameState = GameState.ACTIVE;
+        this.gameTimer = null;
         setupInitialPosition();
         recordPosition();
+    }
+
+    public GameController(int timeMinutes) {
+        this.board = new Board();
+        this.whitePlayer = new Player(Color.WHITE);
+        this.blackPlayer = new Player(Color.BLACK);
+        this.currentPlayer = whitePlayer;
+        this.gameState = GameState.ACTIVE;
+        this.gameTimer = new GameTimer(timeMinutes);
+        setupInitialPosition();
+        recordPosition();
+    }
+
+    public boolean checkTimeExpired() {
+        if (gameTimer == null) {
+            return false;
+        }
+        Color activeColor = currentPlayer.getColor();
+        if (!gameTimer.hasTimeRemaining(activeColor, activeColor)) {
+            gameState = (currentPlayer == whitePlayer) ? GameState.BLACK_WON : GameState.WHITE_WON;
+            winReason = WinReason.TIMEOUT;
+            return true;
+        }
+        return false;
     }
 
     public boolean movePiece(Piece piece, Square target) {
@@ -77,6 +103,10 @@ public class GameController {
         if (move.hasType(MoveType.PROMOTION)) {
             promotionPendingPawn = (Pawn) piece;
             return;
+        }
+
+        if (gameTimer != null) {
+            gameTimer.recordMove(currentPlayer.getColor());
         }
 
         switchCurrentPlayer();
@@ -414,6 +444,10 @@ public class GameController {
 
     public GameState getGameState() {
         return gameState;
+    }
+
+    public GameTimer getGameTimer() {
+        return gameTimer;
     }
 
     private void setupInitialPosition() {
