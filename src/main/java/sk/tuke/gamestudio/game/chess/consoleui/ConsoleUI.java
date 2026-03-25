@@ -191,9 +191,7 @@ public class ConsoleUI {
                         running = false;
                         lastMessage = "Exiting menu...";
                     }
-                    default -> {
-                        lastMessage = "Unknown command. Try again.";
-                    }
+                    default -> lastMessage = "Unknown command. Try again.";
                 }
             } catch (ScoreException | CommentException | RatingException e) {
                 lastMessage = "Service error: " + e.getMessage();
@@ -473,17 +471,17 @@ public class ConsoleUI {
 
     private String getPieceSymbol(Piece piece) {
         String symbol;
-        if (piece instanceof King k) {
+        if (piece instanceof King) {
             symbol =  "♚";
-        } else if (piece instanceof Queen q) {
+        } else if (piece instanceof Queen) {
             symbol =  "♛";
-        } else if (piece instanceof Rook r) {
+        } else if (piece instanceof Rook) {
             symbol = "♜";
-        } else if (piece instanceof Bishop b) {
+        } else if (piece instanceof Bishop) {
             symbol =  "♝";
-        } else if (piece instanceof Knight n) {
+        } else if (piece instanceof Knight) {
             symbol = "♞";
-        } else if (piece instanceof Pawn p) {
+        } else if (piece instanceof Pawn) {
             symbol ="♟";
         } else {
             symbol = "?";
