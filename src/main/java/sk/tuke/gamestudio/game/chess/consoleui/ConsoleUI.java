@@ -1,5 +1,7 @@
 package sk.tuke.gamestudio.game.chess.consoleui;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import sk.tuke.gamestudio.entity.Comment;
 import sk.tuke.gamestudio.entity.Elo;
 import sk.tuke.gamestudio.entity.Rating;
@@ -14,6 +16,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Component
 public class ConsoleUI {
 
     private static final String TOP_BORDER    = "  ┌───┬───┬───┬───┬───┬───┬───┬───┐";
@@ -32,10 +35,17 @@ public class ConsoleUI {
     private String whiteName;
     private int whiteElo;
     private int blackElo;
-    private final ScoreService scoreService = new ScoreServiceJDBC();
-    private final CommentService commentService = new CommentServiceJDBC();
-    private final RatingService ratingService = new RatingServiceJDBC();
-    private final EloService eloService = new EloServiceJDBC();
+    @Autowired
+    private ScoreService scoreService;
+
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
+    private RatingService ratingService;
+
+    @Autowired
+    private EloService eloService;
 
     private String lastMessage = "";
     private String lastGameMessage = "";

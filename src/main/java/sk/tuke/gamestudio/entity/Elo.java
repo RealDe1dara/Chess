@@ -1,15 +1,37 @@
 package sk.tuke.gamestudio.entity;
 
-public class Elo {
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedQuery;
+import java.io.Serializable;
+
+@Entity
+@NamedQuery( name = "Elo.getTopPlayersByGame",
+        query = "SELECT e FROM Elo e WHERE e.game=:game ORDER BY e.elo DESC")
+@NamedQuery( name = "Elo.getPlayerElo",
+        query = "SELECT e FROM Elo e WHERE e.game=:game AND e.player=:player")
+@NamedQuery( name = "Elo.resetElo",
+        query = "DELETE FROM Elo")
+public class Elo implements Serializable {
+    @Id
+    @GeneratedValue
+    private int ident;
+
     private String game;
     private String player;
     private int elo;
+
+    public Elo() {}
 
     public Elo(String game, String player, int elo) {
         this.game = game;
         this.player = player;
         this.elo = elo;
     }
+
+    public int getIdent() { return ident; }
+    public void setIdent(int ident) { this.ident = ident; }
 
     public String getGame() { return game; }
 

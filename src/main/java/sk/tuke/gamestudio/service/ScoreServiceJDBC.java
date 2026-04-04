@@ -17,7 +17,7 @@ public class ScoreServiceJDBC implements ScoreService {
 
 
     @Override
-    public void addScore(Score score) {
+    public void addScore(Score score) throws ScoreException{
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(INSERT)
         ) {
@@ -32,7 +32,7 @@ public class ScoreServiceJDBC implements ScoreService {
     }
 
     @Override
-    public List<Score> getTopScores(String game) {
+    public List<Score> getTopScores(String game) throws ScoreException {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(SELECT)
         ) {
@@ -50,7 +50,7 @@ public class ScoreServiceJDBC implements ScoreService {
     }
 
     @Override
-    public void reset() {
+    public void reset() throws ScoreException{
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              Statement statement = connection.createStatement()
         ) {

@@ -1,8 +1,23 @@
 package sk.tuke.gamestudio.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Score {
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedQuery;
+
+@Entity
+@NamedQuery( name = "Score.getTopScores",
+        query = "SELECT s FROM Score s WHERE s.game=:game ORDER BY s.points DESC")
+@NamedQuery( name = "Score.resetScores",
+        query = "DELETE FROM Score")
+public class Score implements Serializable {
+    @Id
+    @GeneratedValue
+    private int ident;
+
     private String game;
 
     private String player;
@@ -11,12 +26,17 @@ public class Score {
 
     private Date playedOn;
 
+    public Score() {}
+
     public Score(String game, String player, int points, Date playedOn) {
         this.game = game;
         this.player = player;
         this.points = points;
         this.playedOn = playedOn;
     }
+
+    public int getIdent() { return ident; }
+    public void setIdent(int ident) { this.ident = ident; }
 
     public String getGame() {
         return game;
