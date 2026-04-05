@@ -203,7 +203,7 @@ public class ConsoleUI {
                     }
                     default -> lastMessage = "Unknown command. Try again.";
                 }
-            } catch (ScoreException | CommentException | RatingException e) {
+            } catch (ScoreException | CommentException | RatingException | EloException e) {
                 lastMessage = "Service error: " + e.getMessage();
             } catch (NumberFormatException e) {
                 lastMessage = "Invalid number format.";

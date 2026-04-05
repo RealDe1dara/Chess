@@ -1,0 +1,61 @@
+### ScoreService REST tests
+GET http://localhost:8080/api/score/chess
+
+### Add score
+POST http://localhost:8080/api/score
+Content-Type: application/json
+
+{
+  "game": "chess",
+  "player": "p1",
+  "points": 100,
+  "playedOn": "2026-04-05T12:00:00"
+}
+
+### CommentService REST tests
+GET http://localhost:8080/api/comment/chess
+
+### Add comment
+POST http://localhost:8080/api/comment
+Content-Type: application/json
+
+{
+  "game": "chess",
+  "player": "p1",
+  "comment": "Great game!",
+  "commentedOn": "2026-04-05T12:00:00"
+}
+
+### RatingService REST tests
+POST http://localhost:8080/api/rating
+Content-Type: application/json
+
+{
+  "game": "chess",
+  "player": "p1",
+  "rating": 5,
+  "ratedOn": "2026-04-05T12:00:00"
+}
+
+### Get average rating
+GET http://localhost:8080/api/rating/average/chess
+
+### Get rating for player
+GET http://localhost:8080/api/rating/chess/p1
+
+### EloService REST tests
+POST http://localhost:8080/api/elo
+Content-Type: application/json
+
+{
+  "game": "chess",
+  "player": "p1",
+  "elo": 1200
+}
+
+### Get Elo for player
+GET http://localhost:8080/api/elo/chess/p1
+
+### Get top Elo players
+GET http://localhost:8080/api/elo/top/chess
+

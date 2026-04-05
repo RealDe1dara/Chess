@@ -1,17 +1,19 @@
 package sk.tuke.gamestudio.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 
 @Entity
-@NamedQuery( name = "Elo.getTopPlayersByGame",
+@Table(
+        name = "elo",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"game", "player"})
+)
+@NamedQuery(name = "Elo.getTopPlayersByGame",
         query = "SELECT e FROM Elo e WHERE e.game=:game ORDER BY e.elo DESC")
-@NamedQuery( name = "Elo.getPlayerElo",
+@NamedQuery(name = "Elo.getPlayerElo",
         query = "SELECT e FROM Elo e WHERE e.game=:game AND e.player=:player")
-@NamedQuery( name = "Elo.resetElo",
+@NamedQuery(name = "Elo.resetElo",
         query = "DELETE FROM Elo")
 public class Elo implements Serializable {
     @Id
@@ -20,7 +22,7 @@ public class Elo implements Serializable {
 
     private String game;
     private String player;
-    private int elo;
+    private int elo = 100;
 
     public Elo() {}
 

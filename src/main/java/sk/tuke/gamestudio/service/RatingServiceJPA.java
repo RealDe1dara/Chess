@@ -12,14 +12,27 @@ import java.util.List;
 @Service
 @Transactional
 public class RatingServiceJPA implements RatingService {
-    
+
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     public void setRating(Rating rating) throws RatingException {
         try {
-            entityManager.merge(rating);
+            List<Rating> existingRatings = entityManager
+                    .createNamedQuery("Rating.getRating", Rating.class)
+                    .setParameter("game", rating.getGame())
+                    .setParameter("player", rating.getPlayer())
+                    .getResultList();
+
+            if (!existingRatings.isEmpty()) {
+                Rating existing = existingRatings.get(0);
+                existing.setRating(rating.getRating());
+                existing.setRatedOn(rating.getRatedOn());
+                entityManager.merge(existing);
+            } else {
+                entityManager.persist(rating);
+            }
         } catch (Exception e) {
             throw new RatingException("Error setting rating", e);
         }
@@ -44,7 +57,7 @@ public class RatingServiceJPA implements RatingService {
                     .setParameter("game", game)
                     .setParameter("player", player)
                     .getSingleResult();
-            
+
             return result.getRating();
         } catch (NoResultException e) {
             return 0;
