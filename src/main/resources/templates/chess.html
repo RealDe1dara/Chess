@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chess Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; background: #121212; color: #eaeaea; }
+        .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 18px; }
+        .controls form { display: inline-flex; gap: 8px; align-items: center; }
+        input, select, button, a { padding: 8px 10px; border-radius: 8px; border: none; text-decoration: none; }
+        input, select { background: #222; color: #fff; border: 1px solid #3a3a3a; }
+        button, a { background: #2f6feb; color: #fff; cursor: pointer; }
+        .message { margin: 10px 0 16px; color: #7ee787; min-height: 20px; }
+        .board { border-collapse: collapse; margin-top: 8px; }
+        .board td { width: 64px; height: 64px; text-align: center; font-size: 34px; }
+        .light { background: #f0d9b5; color: #222; }
+        .dark { background: #b58863; color: #111; }
+        .coords { color: #9da7b1; font-size: 12px; display: block; margin-top: 2px; }
+    </style>
+</head>
+<body>
+<div class="top">
+    <h1>Chess Board</h1>
+    <a href="/chess">Main menu</a>
+</div>
+
+<div>
+    <strong>Player:</strong> <span th:text="${playerName}">Player</span>
+    <span> | </span>
+    <strong>Turn:</strong> <span th:text="${currentColor}">WHITE</span>
+    <span> | </span>
+    <strong>State:</strong> <span th:text="${gameState}">ACTIVE</span>
+</div>
+
+<p class="message" th:text="${message}"></p>
+
+<div class="controls">
+    <form action="/chess/play" method="get">
+        <input type="hidden" name="command" value="move">
+        <input name="squareFrom" placeholder="squareFrom (e2)" required>
+        <input name="squareTo" placeholder="squareTo (e4)" required>
+        <button type="submit">Move</button>
+    </form>
+
+    <form action="/chess/play" method="get">
+        <input type="hidden" name="command" value="offerdraw">
+        <button type="submit">Offer draw</button>
+    </form>
+
+    <form action="/chess/play" method="get">
+        <input type="hidden" name="command" value="acceptdraw">
+        <button type="submit">Accept draw</button>
+    </form>
+
+    <form action="/chess/play" method="get">
+        <input type="hidden" name="command" value="declinedraw">
+        <button type="submit">Decline draw</button>
+    </form>
+
+    <form action="/chess/play" method="get">
+        <input type="hidden" name="command" value="resign">
+        <button type="submit">Resign</button>
+    </form>
+
+    <form th:if="${promotionPending}" action="/chess/play" method="get">
+        <input type="hidden" name="command" value="promote">
+        <select name="piece">
+            <option value="Q">Queen</option>
+            <option value="R">Rook</option>
+            <option value="B">Bishop</option>
+            <option value="N">Knight</option>
+        </select>
+        <button type="submit">Promote</button>
+    </form>
+
+    <form action="/chess/play" method="get">
+        <input type="hidden" name="command" value="new">
+        <button type="submit">New game</button>
+    </form>
+</div>
+
+<table class="board">
+    <tr th:each="row : ${rows}">
+        <td th:each="col : ${columns}"
+            th:classappend="${(row + col) % 2 == 0} ? 'light' : 'dark'">
+            <span th:text="${@chessController.pieceSymbol(board.getSquare(row, col).piece)}"></span>
+            <span class="coords" th:text="${@chessController.squareLabel(row, col)}"></span>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

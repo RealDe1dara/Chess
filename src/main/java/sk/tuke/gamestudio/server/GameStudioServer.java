@@ -13,7 +13,6 @@ public class GameStudioServer {
         SpringApplication.run(GameStudioServer.class, args);
     }
 
-    // Server should expose JPA (or JDBC) services, not REST clients
     @Bean
     public ScoreService scoreService() {
         return new ScoreServiceJPA();

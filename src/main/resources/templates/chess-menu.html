@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chess Menu</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; background: #0f1720; color: #e6edf3; }
+        .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1100px; }
+        .card { background: #161b22; border: 1px solid #2f3742; border-radius: 12px; padding: 18px; }
+        h1 { margin: 0 0 16px; }
+        h2 { margin: 0 0 12px; font-size: 20px; }
+        .actions { display: flex; flex-direction: column; gap: 12px; }
+        input, select, button, a { padding: 10px 12px; border-radius: 8px; border: none; text-decoration: none; }
+        input, select { background: #0d1117; color: #fff; border: 1px solid #30363d; width: 100%; box-sizing: border-box; }
+        button, .play { background: #238636; color: #fff; cursor: pointer; }
+        .continue { background: #1f6feb; color: #fff; text-align: center; }
+        .msg { margin-top: 10px; color: #f2cc60; min-height: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px 8px; border-bottom: 1px solid #2f3742; text-align: left; }
+        th { color: #9da7b1; font-weight: 600; }
+    </style>
+</head>
+<body>
+<h1>Chess Main Menu</h1>
+
+<div class="layout">
+    <div class="card">
+        <h2>Play & Rating</h2>
+        <div class="actions">
+            <a class="play" href="/chess/play?command=new">Play (new game)</a>
+            <a class="continue" href="/chess/play">Continue current game</a>
+
+            <form action="/chess/rate" method="post">
+                <input name="player" placeholder="Your name" th:value="${playerName}" required>
+                <select name="value" required>
+                    <option value="5">5 - Excellent</option>
+                    <option value="4">4 - Good</option>
+                    <option value="3">3 - OK</option>
+                    <option value="2">2 - Weak</option>
+                    <option value="1">1 - Poor</option>
+                </select>
+                <button type="submit">Save rating</button>
+            </form>
+        </div>
+        <p>Average rating: <strong th:text="${averageRating}">0</strong>/5</p>
+        <p class="msg" th:text="${menuMessage}"></p>
+    </div>
+
+    <div class="card">
+        <h2>Top Scores</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Player</th>
+                <th>Points</th>
+                <th>Played on</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(topScores)}">
+                <td colspan="4">No score yet.</td>
+            </tr>
+            <tr th:each="score, iter : ${topScores}">
+                <td th:text="${iter.count}">1</td>
+                <td th:text="${score.player}">Player</td>
+                <td th:text="${score.points}">0</td>
+                <td th:text="${#dates.format(score.playedOn, 'yyyy-MM-dd HH:mm')}">time</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
