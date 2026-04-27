@@ -4,6 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import sk.tuke.gamestudio.service.AuthService;
 import sk.tuke.gamestudio.service.*;
 
 @SpringBootApplication
@@ -31,6 +34,21 @@ public class GameStudioServer {
     @Bean
     public CommentService commentService() {
         return new CommentServiceJPA();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public GameUserService gameUserService() {
+        return new GameUserServiceJPA();
+    }
+
+    @Bean
+    public AuthService authService(GameUserService gameUserService, PasswordEncoder passwordEncoder) {
+        return new AuthService(gameUserService, passwordEncoder);
     }
 
 }

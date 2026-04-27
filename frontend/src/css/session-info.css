@@ -1,0 +1,18 @@
+.session-info {
+  margin-top: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #ecd7c5;
+  font-size: 14px;
+}
+
+.session-info .logout-btn {
+  border: 1px solid #7c5d49;
+  background: #3f2e24;
+  color: #f1dfd0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
