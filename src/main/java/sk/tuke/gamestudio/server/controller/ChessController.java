@@ -253,7 +253,7 @@ public class ChessController {
         return scoreService.getTopScores(GAME);
     }
 
-    public int getAverageRating() {
+    public double getAverageRating() {
         return ratingService.getAverageRating(GAME);
     }
 

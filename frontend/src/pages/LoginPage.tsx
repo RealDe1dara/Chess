@@ -1,46 +1,45 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import AuthFormCard from '../components/AuthFormCard'
+import ToastStack from '../components/menu/ToastStack'
+import useToasts from '../hooks/useToasts'
 import type { AuthResponse, User } from '../types/auth'
+import MainMenuPage from './MainMenuPage'
 import '../css/login-page.css'
 
 function LoginPage() {
   const [user, setUser] = useState<User | null>(null)
-  const [status, setStatus] = useState<string>('Checking session...')
-  const [statusKind, setStatusKind] = useState<'ok' | 'error'>('ok')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const { toasts, pushToast } = useToasts()
 
-  useEffect(() => {
-    void refreshSession()
-  }, [])
-
-  const setMessage = (message: string, kind: 'ok' | 'error' = 'ok') => {
-    setStatus(message)
-    setStatusKind(kind)
-  }
-
-  const readResponse = async (response: Response): Promise<AuthResponse | null> => {
+  const readResponse = useCallback(async (response: Response): Promise<AuthResponse | null> => {
     try {
       return (await response.json()) as AuthResponse
     } catch {
       return null
     }
-  }
+  }, [])
 
-  const refreshSession = async () => {
+  const refreshSession = useCallback(async () => {
     const response = await fetch('/api/auth/me', { credentials: 'include' })
     const body = await readResponse(response)
     if (body?.authenticated && body.user) {
       setUser(body.user)
       setUsername(body.user.username)
-      setMessage(`Signed in as ${body.user.username}.`)
+      pushToast(`Signed in as ${body.user.username}.`)
       return
     }
 
     setUser(null)
-    setMessage('Not signed in yet.')
-  }
+  }, [pushToast, readResponse])
+
+  useEffect(() => {
+    const timerId = window.setTimeout(() => {
+      void refreshSession()
+    }, 0)
+    return () => window.clearTimeout(timerId)
+  }, [refreshSession])
 
   const handleAuth = async (endpoint: '/api/auth/login' | '/api/auth/register') => {
     const response = await fetch(endpoint, {
@@ -52,13 +51,13 @@ function LoginPage() {
 
     const body = await readResponse(response)
     if (!response.ok || !body?.authenticated || !body.user) {
-      setMessage(body?.message ?? 'Authentication failed.', 'error')
+      pushToast(body?.message ?? 'Authentication failed.', 'error')
       return
     }
 
     setUser(body.user)
     setUsername(body.user.username)
-    setMessage(body.message ?? 'Success.')
+    pushToast(body.message ?? 'Success.')
   }
 
   const handleLogout = async () => {
@@ -69,25 +68,28 @@ function LoginPage() {
 
     setUser(null)
     setPassword('')
-    setMessage('Logged out.')
+    pushToast('Logged out.')
   }
 
   return (
     <main className="login-page">
-      <AuthFormCard
-        user={user}
-        username={username}
-        password={password}
-        showPassword={showPassword}
-        status={status}
-        statusKind={statusKind}
-        onUsernameChange={setUsername}
-        onPasswordChange={setPassword}
-        onTogglePassword={() => setShowPassword((value) => !value)}
-        onLogin={() => void handleAuth('/api/auth/login')}
-        onRegister={() => void handleAuth('/api/auth/register')}
-        onLogout={() => void handleLogout()}
-      />
+      {user ? (
+        <MainMenuPage user={user} onUserChange={setUser} onLogout={() => void handleLogout()} />
+      ) : (
+        <AuthFormCard
+          user={user}
+          username={username}
+          password={password}
+          showPassword={showPassword}
+          onUsernameChange={setUsername}
+          onPasswordChange={setPassword}
+          onTogglePassword={() => setShowPassword((value) => !value)}
+          onLogin={() => void handleAuth('/api/auth/login')}
+          onRegister={() => void handleAuth('/api/auth/register')}
+          onLogout={() => void handleLogout()}
+        />
+      )}
+      <ToastStack toasts={toasts} />
     </main>
   )
 }

@@ -7,8 +7,6 @@ type AuthFormCardProps = {
   username: string
   password: string
   showPassword: boolean
-  status: string
-  statusKind: 'ok' | 'error'
   onUsernameChange: (value: string) => void
   onPasswordChange: (value: string) => void
   onTogglePassword: () => void
@@ -22,8 +20,6 @@ function AuthFormCard({
   username,
   password,
   showPassword,
-  status,
-  statusKind,
   onUsernameChange,
   onPasswordChange,
   onTogglePassword,
@@ -71,7 +67,6 @@ function AuthFormCard({
         </button>
       </div>
 
-      <p className={`status-line ${statusKind}`}>{status}</p>
       {user && <SessionInfo username={user.username} onLogout={onLogout} />}
     </section>
   )

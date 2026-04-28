@@ -1,0 +1,109 @@
+.player-stats-section h2 {
+  /*margin: 0 0 10px;*/
+  font-size: 20px;
+  margin: 0 auto;
+  color: #f8eadc;
+  text-align: center;
+}
+
+.player-stats-section {
+  display: grid;
+  gap: 10px;
+}
+
+.player-stats-section .identity-block {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.player-stats-section .identity-block .name {
+  margin: 0;
+  color: #fff1e3;
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.player-stats-section .identity-block .elo-line {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #e8cfb8;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.player-stats-section .games-row {
+  margin: 0 auto;
+  color: #e8cfb8;
+}
+
+.player-stats-section .wdl-template,
+.player-stats-section .wdl-values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  text-align: center;
+}
+
+.player-stats-section .wdl-template span,
+.player-stats-section .wdl-values strong {
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.player-stats-section .wdl-template .win,
+.player-stats-section .wdl-values .win {
+  background: rgba(69, 121, 86, 0.22);
+  color: #b8f0c6;
+}
+
+.player-stats-section .wdl-template .draw,
+.player-stats-section .wdl-values .draw {
+  background: rgba(178, 140, 92, 0.2);
+  color: #f3d4a8;
+}
+
+.player-stats-section .wdl-template .loss,
+.player-stats-section .wdl-values .loss {
+  background: rgba(138, 84, 68, 0.24);
+  color: #ffc0ad;
+}
+
+.player-stats-section .your-rate {
+  display: grid;
+  gap: 8px;
+}
+
+.player-stats-section .your-rate > span {
+  color: #d2b9a3;
+  font-size: 13px;
+}
+
+.player-stats-section .your-rate .current-rating {
+  justify-self: start;
+}
+
+.player-stats-section .your-rate .rating-picker {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.player-stats-section .your-rate .pick-star {
+  border: none;
+  background: transparent;
+  color: #5f4738;
+  font-size: 26px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+}
+
+.player-stats-section .your-rate .pick-star.active {
+  color: #f6c15a;
+}
+
+.player-stats-section .your-rate .set-rating-btn {
+  width: fit-content;
+}

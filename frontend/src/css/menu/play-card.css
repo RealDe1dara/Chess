@@ -1,0 +1,25 @@
+.play-card {
+  grid-column: span 4;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.play-card h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #f8eadc;
+}
+
+.play-card .play-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 16px 26px;
+  background: linear-gradient(135deg, #9b704c, #7f5a3d);
+  color: #fff7ef;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+}

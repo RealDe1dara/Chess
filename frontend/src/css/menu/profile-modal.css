@@ -1,0 +1,177 @@
+.profile-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 8, 6, 0.68);
+  display: grid;
+  place-items: center;
+  z-index: 70;
+  padding: 16px;
+}
+
+.profile-modal-backdrop.open {
+  animation: profile-backdrop-in 220ms ease both;
+}
+
+.profile-modal-backdrop.closing {
+  animation: profile-backdrop-out 220ms ease both;
+}
+
+.profile-modal {
+  width: min(560px, 100%);
+  max-height: min(88vh, 760px);
+  overflow: auto;
+}
+
+.profile-modal.open {
+  animation: profile-modal-in 220ms ease both;
+}
+
+.profile-modal.closing {
+  animation: profile-modal-out 220ms ease both;
+}
+
+.profile-modal > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.profile-modal > header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #f8eadc;
+}
+
+.profile-modal .close-btn {
+  border: 1px solid #6f5442;
+  background: #33261f;
+  color: #f5e6d8;
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+}
+
+.profile-modal .identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #5c4738;
+  border-radius: 12px;
+  background: #1f1712;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.profile-modal .identity .username {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #f4e4d6;
+}
+
+.profile-modal .identity .elo-line {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #d9c2ae;
+}
+
+.profile-modal .last-games,
+.profile-modal .settings {
+  border: 1px solid #5c4738;
+  border-radius: 12px;
+  background: #1f1712;
+  padding: 12px;
+}
+
+.profile-modal .last-games {
+  margin-bottom: 12px;
+}
+
+.profile-modal h3 {
+  margin: 0 0 10px;
+  color: #ecd7c5;
+  font-size: 17px;
+}
+
+.profile-modal p {
+  margin: 0;
+  color: #deccbc;
+}
+
+.profile-modal label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.profile-modal label span {
+  display: block;
+  margin-bottom: 6px;
+  color: #e6d0be;
+  font-size: 13px;
+}
+
+.profile-modal input {
+  width: 100%;
+  border: 1px solid #644f40;
+  border-radius: 10px;
+  background: #1c140f;
+  color: #f3e9df;
+  padding: 10px;
+}
+
+.profile-modal .small-btn {
+  margin-bottom: 10px;
+}
+
+.profile-modal .small-btn.primary {
+  background: #8f6544;
+  border-color: #8f6544;
+  color: #fff7ef;
+}
+
+@keyframes profile-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes profile-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes profile-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes profile-modal-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}

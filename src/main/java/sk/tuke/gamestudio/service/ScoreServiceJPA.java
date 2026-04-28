@@ -37,6 +37,35 @@ public class ScoreServiceJPA implements ScoreService {
     }
 
     @Override
+    public List<Score> getRecentScores(String game, int limit) throws ScoreException {
+        try {
+            return entityManager.createQuery(
+                            "SELECT s FROM Score s WHERE s.game = :game ORDER BY s.playedOn DESC, s.ident DESC",
+                            Score.class)
+                    .setParameter("game", game)
+                    .setMaxResults(Math.max(1, limit))
+                    .getResultList();
+        } catch (Exception e) {
+            throw new ScoreException("Error retrieving recent scores", e);
+        }
+    }
+
+    @Override
+    public List<Score> getScoresByPlayer(String game, String player, int limit) throws ScoreException {
+        try {
+            return entityManager.createQuery(
+                            "SELECT s FROM Score s WHERE s.game = :game AND s.player = :player ORDER BY s.playedOn DESC, s.ident DESC",
+                            Score.class)
+                    .setParameter("game", game)
+                    .setParameter("player", player)
+                    .setMaxResults(Math.max(1, limit))
+                    .getResultList();
+        } catch (Exception e) {
+            throw new ScoreException("Error retrieving player scores", e);
+        }
+    }
+
+    @Override
     public void reset() throws ScoreException {
         try {
             entityManager.createNamedQuery("Score.resetScores").executeUpdate();

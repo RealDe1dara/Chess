@@ -150,12 +150,12 @@ public class ConsoleUI {
                         lastMessage = "Rating saved.";
                     }
                     case "rating avg" -> {
-                        int avg = ratingService.getAverageRating(game);
+                        double avg = ratingService.getAverageRating(game);
                         if(avg == 0){
                             lastMessage =  "No ratings yet.";
                         }
                         else {
-                            lastMessage = "Average rating for '" + game + "': " + avg;
+                            lastMessage = "Average rating for '" + game + "': " + String.format("%.1f", avg);
                         }
                     }
                     case "rating get" -> {

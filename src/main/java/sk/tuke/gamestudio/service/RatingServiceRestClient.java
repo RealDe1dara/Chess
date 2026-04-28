@@ -24,9 +24,9 @@ public class RatingServiceRestClient implements RatingService {
     }
 
     @Override
-    public int getAverageRating(String game) throws RatingException {
+    public double getAverageRating(String game) throws RatingException {
         try {
-            Integer result = restTemplate.getForObject(url + "/average/" + game, Integer.class);
+            Double result = restTemplate.getForObject(url + "/average/" + game, Double.class);
             return result != null ? result : 0;
         } catch (Exception e) {
             throw new RatingException("Error getting average rating via REST", e);

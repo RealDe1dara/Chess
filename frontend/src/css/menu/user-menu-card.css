@@ -1,0 +1,93 @@
+.user-menu-card {
+  grid-column: span 4;
+}
+
+.user-menu-card .user-chip {
+  width: 100%;
+  border: 1px solid #644f40;
+  border-radius: 14px;
+  padding: 12px;
+  background: #1c140f;
+  color: #f5e6d8;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.user-menu-card .avatar-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #7c5d49;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  background: #3a2a21;
+}
+
+.user-menu-card .user-chip span {
+  display: grid;
+  gap: 2px;
+}
+
+.user-menu-card .user-chip small {
+  color: #d9c2ae;
+  font-size: 12px;
+}
+
+.user-menu-card .profile-panel {
+  margin-top: 12px;
+}
+
+.user-menu-card h2 {
+  margin: 0 0 10px;
+  color: #f8eadc;
+  font-size: 20px;
+}
+
+.user-menu-card label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.user-menu-card label span {
+  display: block;
+  margin-bottom: 6px;
+  color: #e6d0be;
+  font-size: 13px;
+}
+
+.user-menu-card input {
+  width: 100%;
+  border: 1px solid #644f40;
+  border-radius: 10px;
+  background: #1c140f;
+  color: #f3e9df;
+  padding: 10px;
+}
+
+.user-menu-card .small-btn {
+  margin-bottom: 10px;
+}
+
+.user-menu-card .small-btn.primary {
+  background: #8f6544;
+  border-color: #8f6544;
+  color: #fff7ef;
+}
+
+.user-menu-card .profile-status {
+  min-height: 18px;
+  margin: 0;
+  font-size: 13px;
+}
+
+.user-menu-card .profile-status.ok {
+  color: #b8f0c6;
+}
+
+.user-menu-card .profile-status.error {
+  color: #ffc0ad;
+}

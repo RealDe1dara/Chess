@@ -19,6 +19,18 @@ public class ScoreServiceRest {
         return scoreService.getTopScores(game);
     }
 
+    @GetMapping("/recent/{game}")
+    public List<Score> getRecentScores(@PathVariable String game, @RequestParam(defaultValue = "20") int limit) {
+        return scoreService.getRecentScores(game, limit);
+    }
+
+    @GetMapping("/player/{game}/{player}")
+    public List<Score> getScoresByPlayer(@PathVariable String game,
+                                         @PathVariable String player,
+                                         @RequestParam(defaultValue = "20") int limit) {
+        return scoreService.getScoresByPlayer(game, player, limit);
+    }
+
     @PostMapping
     public void addScore(@RequestBody Score score) {
         scoreService.addScore(score);

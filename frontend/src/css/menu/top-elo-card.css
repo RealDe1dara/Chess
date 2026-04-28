@@ -1,0 +1,22 @@
+.top-elo-card {
+  grid-column: span 4;
+}
+
+.top-elo-card h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: #f8eadc;
+}
+
+.top-elo-card ol {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.top-elo-card li {
+  margin: 6px 0;
+  color: #e0cbb9;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}

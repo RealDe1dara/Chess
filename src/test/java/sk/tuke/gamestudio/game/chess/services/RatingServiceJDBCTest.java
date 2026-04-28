@@ -35,8 +35,8 @@ public class RatingServiceJDBCTest extends JdbcServiceTestBase {
         ratingService.setRating(new Rating("chess", "p2", 5, new Date(0)));
         ratingService.setRating(new Rating("other", "p3", 1, new Date(0)));
 
-        int avg = ratingService.getAverageRating("chess");
-        assertEquals(4, avg);
+        double avg = ratingService.getAverageRating("chess");
+        assertEquals(4.0, avg);
     }
 
     @Test

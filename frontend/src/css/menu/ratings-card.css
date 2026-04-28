@@ -1,0 +1,35 @@
+.ratings-card {
+  grid-column: span 4;
+}
+
+.ratings-card h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: #f8eadc;
+}
+
+.ratings-card .ratings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ratings-card article {
+  border: 1px solid #644f40;
+  border-radius: 12px;
+  padding: 12px;
+  background: #1f1712;
+}
+
+.ratings-card span {
+  display: block;
+  color: #d2b9a3;
+  font-size: 13px;
+}
+
+.ratings-card strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 28px;
+  color: #fef1e5;
+}

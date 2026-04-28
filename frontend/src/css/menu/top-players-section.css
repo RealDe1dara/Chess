@@ -1,0 +1,61 @@
+.top-players-section h2 {
+  margin: 0 auto;
+  text-align: center;
+  font-size: 20px;
+  color: #f8eadc;
+}
+
+.top-players-section ol {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.top-players-section li {
+  margin: 6px 0;
+  color: #e0cbb9;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 8px;
+}
+
+.top-players-section li .player-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-players-section li .rank-number {
+  color: #c9b29d;
+  font-size: 13px;
+  min-width: 18px;
+}
+
+.top-players-section li .rank-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.top-players-section li .rank-icon.crown {
+  color: #f6c15a;
+}
+
+.top-players-section li .rank-icon.silver {
+  color: #cfd3dc;
+}
+
+.top-players-section li .rank-icon.bronze {
+  color: #cf8a5d;
+}
+
+.top-players-section li .rank-icon.star {
+  color: #a58d79;
+}
+
+.top-players-section li.me {
+  background: rgba(185, 140, 99, 0.18);
+  border: 1px solid #8f6544;
+  color: #fff1e3;
+}

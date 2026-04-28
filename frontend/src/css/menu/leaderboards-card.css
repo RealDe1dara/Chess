@@ -1,0 +1,47 @@
+.leaderboards-card {
+  grid-column: span 8;
+}
+
+.leaderboards-card h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: #f8eadc;
+}
+
+.leaderboards-card .leaderboards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.leaderboards-card article {
+  border: 1px solid #644f40;
+  border-radius: 12px;
+  background: #1f1712;
+  padding: 12px;
+}
+
+.leaderboards-card h3 {
+  margin: 0 0 8px;
+  color: #ecd7c5;
+  font-size: 16px;
+}
+
+.leaderboards-card ol {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.leaderboards-card li {
+  margin: 6px 0;
+  color: #e0cbb9;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .leaderboards-card .leaderboards-grid {
+    grid-template-columns: 1fr;
+  }
+}

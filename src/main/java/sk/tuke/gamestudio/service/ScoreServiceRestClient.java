@@ -27,6 +27,18 @@ public class ScoreServiceRestClient implements ScoreService {
     }
 
     @Override
+    public List<Score> getRecentScores(String gameName, int limit) {
+        return Arrays.asList(Objects.requireNonNull(
+                restTemplate.getForEntity(url + "/recent/" + gameName + "?limit=" + Math.max(1, limit), Score[].class).getBody()));
+    }
+
+    @Override
+    public List<Score> getScoresByPlayer(String gameName, String player, int limit) {
+        return Arrays.asList(Objects.requireNonNull(
+                restTemplate.getForEntity(url + "/player/" + gameName + "/" + player + "?limit=" + Math.max(1, limit), Score[].class).getBody()));
+    }
+
+    @Override
     public void reset() {
 //        throw new UnsupportedOperationException("Not supported via web service");
         throw new ScoreException("Reset not supported via REST client");
