@@ -36,7 +36,7 @@ public class EloServiceJDBC implements EloService {
     }
 
     @Override
-    public int getElo(String game, String player) throws EloException {
+    public Integer getElo(String game, String player) throws EloException {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(SELECT_BY_PLAYER)) {
             statement.setString(1, game);

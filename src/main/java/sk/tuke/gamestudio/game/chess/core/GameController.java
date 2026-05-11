@@ -2,6 +2,7 @@ package sk.tuke.gamestudio.game.chess.core;
 
 import sk.tuke.gamestudio.game.chess.core.pieces.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -409,6 +410,32 @@ public class GameController {
         winReason = WinReason.RESIGN;
     }
 
+    public void resignColor(Color color) {
+        if (gameState != GameState.ACTIVE) return;
+        gameState = (color == Color.WHITE) ? GameState.BLACK_WON : GameState.WHITE_WON;
+        winReason = WinReason.RESIGN;
+    }
+
+    public void timeoutColor(Color color) {
+        if (gameState != GameState.ACTIVE) return;
+        gameState = (color == Color.WHITE) ? GameState.BLACK_WON : GameState.WHITE_WON;
+        winReason = WinReason.TIMEOUT;
+    }
+
+    public List<Square> getValidTargets(Piece piece) {
+        List<Square> targets = new ArrayList<>();
+        for (Move move : piece.getValidMoves(board)) {
+            if (isMoveLegal(move)) {
+                targets.add(move.getNewSquare());
+            }
+        }
+        return targets;
+    }
+
+    public Color getPromotingColor() {
+        return promotionPendingPawn != null ? promotionPendingPawn.getColor() : null;
+    }
+
     public void passTurn() {
         if (gameState != GameState.ACTIVE) return;
         switchCurrentPlayer();
@@ -448,6 +475,75 @@ public class GameController {
 
     public GameTimer getGameTimer() {
         return gameTimer;
+    }
+
+
+    public String toFen() {
+        StringBuilder sb = new StringBuilder();
+
+        for (int row = 0; row < 8; row++) {
+            int empty = 0;
+            for (int col = 0; col < 8; col++) {
+                Piece piece = board.getSquare(row, col).getPiece();
+                if (piece == null) {
+                    empty++;
+                } else {
+                    if (empty > 0) { sb.append(empty); empty = 0; }
+                    char c = fenChar(piece);
+                    sb.append(piece.getColor() == Color.WHITE ? c : Character.toLowerCase(c));
+                }
+            }
+            if (empty > 0) sb.append(empty);
+            if (row < 7) sb.append('/');
+        }
+
+        // 2. Active color
+        sb.append(' ').append(currentPlayer.getColor() == Color.WHITE ? 'w' : 'b');
+
+        // 3. Castling rights
+        StringBuilder castling = new StringBuilder();
+        King wk = whitePlayer.getKing();
+        King bk = blackPlayer.getKing();
+        if (wk != null && wk.getIsFirstMove()) {
+            if (isUnmovedRook(7, 7, Color.WHITE)) castling.append('K');
+            if (isUnmovedRook(7, 0, Color.WHITE)) castling.append('Q');
+        }
+        if (bk != null && bk.getIsFirstMove()) {
+            if (isUnmovedRook(0, 7, Color.BLACK)) castling.append('k');
+            if (isUnmovedRook(0, 0, Color.BLACK)) castling.append('q');
+        }
+        sb.append(' ').append(castling.length() > 0 ? castling : "-");
+
+        // 4. En passant target square
+        Move lastMove = board.getLastMove();
+        if (lastMove != null && lastMove.hasType(MoveType.PAWN_DOUBLE)) {
+            int col = lastMove.getNewSquare().getColumn();
+            int epRow = lastMove.getMovedPiece().getColor() == Color.WHITE
+                    ? lastMove.getNewSquare().getRow() + 1   // white pushed up → ep square is one row below
+                    : lastMove.getNewSquare().getRow() - 1;  // black pushed down → ep square is one row above
+            sb.append(' ').append((char) ('a' + col)).append(8 - epRow);
+        } else {
+            sb.append(" -");
+        }
+
+        // 5. Halfmove clock / fullmove number (not tracked; safe defaults for engine use)
+        sb.append(" 0 1");
+
+        return sb.toString();
+    }
+
+    private char fenChar(Piece piece) {
+        if (piece instanceof King)   return 'K';
+        if (piece instanceof Queen)  return 'Q';
+        if (piece instanceof Rook)   return 'R';
+        if (piece instanceof Bishop) return 'B';
+        if (piece instanceof Knight) return 'N';
+        return 'P';
+    }
+
+    private boolean isUnmovedRook(int row, int col, Color color) {
+        Piece p = board.getSquare(row, col).getPiece();
+        return p instanceof Rook r && r.getColor() == color && r.getIsFirstMove();
     }
 
     private void setupInitialPosition() {

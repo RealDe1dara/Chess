@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { AuthResponse, User } from '../../types/auth'
+import { authHeaders } from '../../utils/auth'
 import '../../css/menu/user-menu-card.css'
 
 type UserMenuCardProps = {
@@ -32,8 +33,7 @@ function UserMenuCard({ user, elo, onUserChange }: UserMenuCardProps) {
   const handleUsernameSave = async () => {
     const response = await fetch('/api/auth/profile', {
       method: 'PUT',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: newUsername.trim() }),
     })
     const body = await readAuthResponse(response)
@@ -49,8 +49,7 @@ function UserMenuCard({ user, elo, onUserChange }: UserMenuCardProps) {
   const handlePasswordChange = async () => {
     const response = await fetch('/api/auth/password', {
       method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ currentPassword, newPassword }),
     })
     const body = await readAuthResponse(response)

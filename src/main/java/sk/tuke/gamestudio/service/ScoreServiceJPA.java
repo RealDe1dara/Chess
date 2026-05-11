@@ -66,6 +66,18 @@ public class ScoreServiceJPA implements ScoreService {
     }
 
     @Override
+    public void renamePlayer(String oldName, String newName) throws ScoreException {
+        try {
+            entityManager.createQuery("UPDATE Score s SET s.player = :newName WHERE s.player = :oldName")
+                    .setParameter("newName", newName)
+                    .setParameter("oldName", oldName)
+                    .executeUpdate();
+        } catch (Exception e) {
+            throw new ScoreException("Error renaming player in scores", e);
+        }
+    }
+
+    @Override
     public void reset() throws ScoreException {
         try {
             entityManager.createNamedQuery("Score.resetScores").executeUpdate();

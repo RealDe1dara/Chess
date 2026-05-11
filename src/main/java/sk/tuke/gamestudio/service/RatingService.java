@@ -7,4 +7,5 @@ public interface RatingService {
     double getAverageRating(String game) throws RatingException;
     int getRating(String game, String player) throws RatingException;
     void reset() throws RatingException;
+    default void renamePlayer(String oldName, String newName) throws RatingException {}
 }

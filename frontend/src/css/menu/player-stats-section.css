@@ -1,8 +1,7 @@
 .player-stats-section h2 {
-  /*margin: 0 0 10px;*/
   font-size: 20px;
   margin: 0 auto;
-  color: #f8eadc;
+  color: #ffffff;
   text-align: center;
 }
 
@@ -19,7 +18,7 @@
 
 .player-stats-section .identity-block .name {
   margin: 0;
-  color: #fff1e3;
+  color: #ffffff;
   font-size: 26px;
   line-height: 1.1;
 }
@@ -29,16 +28,17 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #e8cfb8;
+  color: #ffffff;
   font-size: 18px;
   font-weight: 700;
 }
 
 .player-stats-section .games-row {
   margin: 0 auto;
-  color: #e8cfb8;
+  color: #ffffff;
 }
 
+.player-stats-section .wdl-labels,
 .player-stats-section .wdl-template,
 .player-stats-section .wdl-values {
   display: grid;
@@ -47,28 +47,39 @@
   text-align: center;
 }
 
+.player-stats-section .wdl-labels {
+  margin-bottom: -4px;
+}
+
+.player-stats-section .wdl-labels span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
 .player-stats-section .wdl-template span,
 .player-stats-section .wdl-values strong {
   padding: 6px 8px;
-  border-radius: 8px;
+  border-radius: 3px;
 }
 
 .player-stats-section .wdl-template .win,
 .player-stats-section .wdl-values .win {
-  background: rgba(69, 121, 86, 0.22);
-  color: #b8f0c6;
+  background: rgba(118, 173, 75, 0.18);
+  color: #76ad4b;
 }
 
 .player-stats-section .wdl-template .draw,
 .player-stats-section .wdl-values .draw {
-  background: rgba(178, 140, 92, 0.2);
-  color: #f3d4a8;
+  background: rgba(181, 136, 99, 0.18);
+  color: #b58863;
 }
 
 .player-stats-section .wdl-template .loss,
 .player-stats-section .wdl-values .loss {
-  background: rgba(138, 84, 68, 0.24);
-  color: #ffc0ad;
+  background: rgba(180, 70, 60, 0.18);
+  color: #e07060;
 }
 
 .player-stats-section .your-rate {
@@ -77,7 +88,7 @@
 }
 
 .player-stats-section .your-rate > span {
-  color: #d2b9a3;
+  color: #ffffff;
   font-size: 13px;
 }
 
@@ -93,17 +104,58 @@
 .player-stats-section .your-rate .pick-star {
   border: none;
   background: transparent;
-  color: #5f4738;
+  color: #4a4840;
   font-size: 26px;
   line-height: 1;
   padding: 0;
   cursor: pointer;
+  transition: color 0.15s ease, transform 0.1s ease;
+}
+
+.player-stats-section .your-rate .pick-star:hover {
+  color: #c8a030;
+  transform: scale(1.15);
 }
 
 .player-stats-section .your-rate .pick-star.active {
-  color: #f6c15a;
+  color: #d4a830;
 }
 
 .player-stats-section .your-rate .set-rating-btn {
   width: fit-content;
+}
+
+.player-stats-section .winrate-bar-wrap {
+  position: relative;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.player-stats-section .winrate-bar {
+  height: 100%;
+  background: #76ad4b;
+  transition: width 0.5s ease;
+}
+
+.player-stats-section .winrate-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #ffffff;
+  text-align: right;
+}
+
+@media (max-width: 480px) {
+  .player-stats-section .identity-block .name { font-size: 20px; }
+  .player-stats-section .identity-block .elo-line { font-size: 15px; }
+}
+
+@media (max-width: 360px) {
+  .player-stats-section .wdl-template span,
+  .player-stats-section .wdl-values strong {
+    padding: 4px 4px;
+  }
 }

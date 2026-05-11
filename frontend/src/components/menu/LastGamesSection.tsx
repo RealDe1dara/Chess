@@ -21,19 +21,24 @@ function LastGamesSection({ games, onNewGame }: LastGamesSectionProps) {
           New game
         </button>
       </header>
-      <div className="games-list">
-        {games.length === 0 ? (
-          <p className="empty">No games yet.</p>
-        ) : (
-          games.map((game) => (
-            <article key={game.id} className="game-item">
-              <p className="pair">{game.pair}</p>
-              <p className={`result ${game.result.toLowerCase()}`}>{game.result}</p>
-              <time>{new Date(game.playedOn).toLocaleString()}</time>
-            </article>
-          ))
-        )}
-      </div>
+      {games.length === 0 ? (
+        <p className="empty">No games yet.</p>
+      ) : (
+        <div className="games-table">
+          <div className="games-table-header">
+            <span>Opponent</span>
+            <span>Date</span>
+            <span>Result</span>
+          </div>
+          {games.map((game) => (
+            <div key={game.id} className="game-row">
+              <span className="row-pair">{game.pair}</span>
+              <time className="row-date">{new Date(game.playedOn).toLocaleString()}</time>
+              <span className={`row-result ${game.result.toLowerCase()}`}>{game.result}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   )
 }

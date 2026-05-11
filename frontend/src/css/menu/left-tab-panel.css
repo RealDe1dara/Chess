@@ -1,0 +1,36 @@
+.ltp-tab-bar {
+  display: flex;
+  border-bottom: 1px solid #3a3835;
+  flex-shrink: 0;
+}
+
+.ltp-tab-btn {
+  flex: 1;
+  padding: 13px 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: #7a8a70;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.ltp-tab-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ltp-tab-btn--active {
+  color: #ffffff;
+  border-bottom-color: #76ad4b;
+}
+
+.ltp-tab-body {
+  padding: 20px 40px;
+  overflow-y: auto;
+}

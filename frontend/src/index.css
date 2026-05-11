@@ -12,6 +12,6 @@ body,
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #060d1f;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #302e2b;
 }

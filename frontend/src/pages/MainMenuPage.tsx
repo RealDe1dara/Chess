@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { authHeaders } from '../utils/auth'
 import MenuHeader from '../components/menu/MenuHeader'
-import ProfileModal from '../components/menu/ProfileModal'
 import ToastStack from '../components/menu/ToastStack'
-import PlayerStatsSection from '../components/menu/PlayerStatsSection'
+import LeftTabPanel from '../components/menu/LeftTabPanel'
 import LastGamesSection from '../components/menu/LastGamesSection'
-import TopPlayersSection from '../components/menu/TopPlayersSection'
-import CommentsCard from '../components/menu/CommentsCard'
+import NewGameModal from '../components/game/NewGameModal'
 import useToasts from '../hooks/useToasts'
 import type { User } from '../types/auth'
 import type { CommentEntry, EloEntry, ScoreEntry } from '../types/menu'
@@ -25,9 +24,10 @@ type MainMenuPageProps = {
   user: User
   onUserChange: (user: User | null) => void
   onLogout: () => void
+  onStartGame: (gameId: number) => void
 }
 
-function MainMenuPage({ user, onUserChange, onLogout }: MainMenuPageProps) {
+function MainMenuPage({ user, onUserChange, onLogout, onStartGame }: MainMenuPageProps) {
   const [elo, setElo] = useState<number | null>(null)
   const [userRating, setUserRating] = useState<number | null>(null)
   const [averageRating, setAverageRating] = useState<number | null>(null)
@@ -36,7 +36,7 @@ function MainMenuPage({ user, onUserChange, onLogout }: MainMenuPageProps) {
   const [recentScores, setRecentScores] = useState<ScoreEntry[]>([])
   const [comments, setComments] = useState<CommentEntry[]>([])
   const [commentDraft, setCommentDraft] = useState('')
-  const [profileOpen, setProfileOpen] = useState(false)
+  const [newGameOpen, setNewGameOpen] = useState(false)
   const { toasts, pushToast } = useToasts()
 
   const readNumericResponse = useCallback(async (response: Response): Promise<number | null> => {
@@ -63,15 +63,16 @@ function MainMenuPage({ user, onUserChange, onLogout }: MainMenuPageProps) {
 
   const loadMenuData = useCallback(async () => {
     const encodedName = encodeURIComponent(user.username)
+    const headers = authHeaders()
     const [eloResponse, userRatingResponse, averageRatingResponse, topEloResponse, playerScoresResponse, recentScoresResponse, commentsResponse] =
       await Promise.all([
-        fetch(`/api/elo/${GAME}/${encodedName}`, { credentials: 'include' }),
-        fetch(`/api/rating/${GAME}/${encodedName}`, { credentials: 'include' }),
-        fetch(`/api/rating/average/${GAME}`, { credentials: 'include' }),
-        fetch(`/api/elo/top/${GAME}`, { credentials: 'include' }),
-        fetch(`/api/score/player/${GAME}/${encodedName}?limit=30`, { credentials: 'include' }),
-        fetch(`/api/score/recent/${GAME}?limit=200`, { credentials: 'include' }),
-        fetch(`/api/comment/${GAME}`, { credentials: 'include' }),
+        fetch(`/api/elo/${GAME}/${encodedName}`, { headers }),
+        fetch(`/api/rating/${GAME}/${encodedName}`, { headers }),
+        fetch(`/api/rating/average/${GAME}`, { headers }),
+        fetch(`/api/elo/top/${GAME}`, { headers }),
+        fetch(`/api/score/player/${GAME}/${encodedName}?limit=30`, { headers }),
+        fetch(`/api/score/recent/${GAME}?limit=200`, { headers }),
+        fetch(`/api/comment/${GAME}`, { headers }),
       ])
 
     setElo(await readNumericResponse(eloResponse))
@@ -92,8 +93,8 @@ function MainMenuPage({ user, onUserChange, onLogout }: MainMenuPageProps) {
 
     const response = await fetch('/api/comment', {
       method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      // Spread authHeaders() first so Content-Type is not overwritten.
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({
         game: GAME,
         player: user.username,
@@ -126,15 +127,6 @@ function MainMenuPage({ user, onUserChange, onLogout }: MainMenuPageProps) {
         }
         return 'Draw'
       }
-      if (playerScore.points > 0) {
-        return 'Won'
-      }
-      if (playerScore.points < 0) {
-        return 'Lost'
-      }
-      if (playerScore.points === 0) {
-        return 'Draw'
-      }
       return 'Played'
     },
     [recentScores, user.username],
@@ -143,8 +135,7 @@ function MainMenuPage({ user, onUserChange, onLogout }: MainMenuPageProps) {
   const handleSetUserRating = async (value: number) => {
     const response = await fetch('/api/rating', {
       method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({
         game: GAME,
         player: user.username,
@@ -183,7 +174,7 @@ function MainMenuPage({ user, onUserChange, onLogout }: MainMenuPageProps) {
       return {
         id: `${playerScore.ident}-${key}`,
         playedOn: playerScore.playedOn,
-        pair: `${user.username} vs ${opponent}`,
+        pair: opponent,
         result: buildScoreResult(playerScore),
       }
     })
@@ -205,24 +196,32 @@ function MainMenuPage({ user, onUserChange, onLogout }: MainMenuPageProps) {
   }, [loadMenuData])
 
   return (
-    <section className="main-menu-page">
-      <MenuHeader averageRating={averageRating} onProfileOpen={() => setProfileOpen(true)} onLogout={onLogout} />
+    <div className="main-menu-page">
+      <div className="menu-header-bar">
+        <div className="page-container">
+          <MenuHeader
+            user={user}
+            elo={elo}
+            averageRating={averageRating}
+            onUserChange={(updatedUser) => { onUserChange(updatedUser); pushToast(`Signed in as ${updatedUser.username}.`) }}
+            onNotify={pushToast}
+            onLogout={onLogout}
+          />
+        </div>
+      </div>
 
-      <ProfileModal
-        user={user}
-        elo={elo}
-        open={profileOpen}
-        onClose={() => setProfileOpen(false)}
-        onNotify={pushToast}
-        onUserChange={(updatedUser) => {
-          onUserChange(updatedUser)
-          pushToast(`Signed in as ${updatedUser.username}.`)
+      <NewGameModal
+        open={newGameOpen}
+        onClose={() => setNewGameOpen(false)}
+        onGameReady={(id) => {
+          setNewGameOpen(false)
+          onStartGame(id)
         }}
       />
 
-      <div className="menu-grid">
-        <div className="left-column-stack">
-          <PlayerStatsSection
+      <div className="page-container page-body">
+        <div className="menu-grid">
+          <LeftTabPanel
             username={user.username}
             elo={elo}
             userRating={userRating}
@@ -231,20 +230,18 @@ function MainMenuPage({ user, onUserChange, onLogout }: MainMenuPageProps) {
             draws={statsSummary.draws}
             losses={statsSummary.losses}
             onSetRating={handleSetUserRating}
-          />
-        <TopPlayersSection topElo={topElo} currentUsername={user.username} />
-        </div>
-        <LastGamesSection games={lastGames} onNewGame={() => pushToast('New game is coming soon.')} />
-          <CommentsCard
+            topElo={topElo}
             comments={comments}
-            draft={commentDraft}
-            onDraftChange={setCommentDraft}
+            commentDraft={commentDraft}
+            onCommentDraftChange={setCommentDraft}
             onAddComment={() => void addComment()}
           />
+          <LastGamesSection games={lastGames} onNewGame={() => setNewGameOpen(true)} />
+        </div>
       </div>
 
       <ToastStack toasts={toasts} />
-    </section>
+    </div>
   )
 }
 

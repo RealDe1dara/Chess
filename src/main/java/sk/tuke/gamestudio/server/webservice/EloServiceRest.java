@@ -20,7 +20,7 @@ public class EloServiceRest {
     }
 
     @GetMapping("/{game}/{player}")
-    public int getElo(@PathVariable String game, @PathVariable String player) {
+    public Integer getElo(@PathVariable String game, @PathVariable String player) {
         return eloService.getElo(game, player);
     }
 

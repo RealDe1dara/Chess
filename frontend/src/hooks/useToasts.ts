@@ -16,7 +16,7 @@ function useToasts(displayMs = 2600) {
 
   const pushToast = useCallback(
     (text: string, kind: ToastKind = 'ok') => {
-      const id = Date.now() + Math.floor(Math.random() * 100000)
+          const id = Date.now() + Math.floor(Math.random() * 100000)
       const safeDisplayMs = Math.max(displayMs, EXIT_ANIMATION_MS + 50)
 
       setToasts((current) => [...current, { id, text, kind, closing: false }])

@@ -1,5 +1,7 @@
 package sk.tuke.gamestudio.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,10 +12,23 @@ import sk.tuke.gamestudio.entity.GameUser;
 public class AuthService {
     private final GameUserService gameUserService;
     private final PasswordEncoder passwordEncoder;
+    private final ScoreService scoreService;
+    private final EloService eloService;
+    private final RatingService ratingService;
+    private final CommentService commentService;
 
-    public AuthService(GameUserService gameUserService, PasswordEncoder passwordEncoder) {
+    @PersistenceContext
+    private EntityManager em;
+
+    public AuthService(GameUserService gameUserService, PasswordEncoder passwordEncoder,
+                       ScoreService scoreService, EloService eloService,
+                       RatingService ratingService, CommentService commentService) {
         this.gameUserService = gameUserService;
         this.passwordEncoder = passwordEncoder;
+        this.scoreService = scoreService;
+        this.eloService = eloService;
+        this.ratingService = ratingService;
+        this.commentService = commentService;
     }
 
     public GameUser register(String username, String password) {
@@ -67,8 +82,26 @@ public class AuthService {
             throw new IllegalArgumentException("Username is already taken.");
         }
 
+        String oldUsername = user.getUsername();
         user.setUsername(normalizedUsername);
-        return gameUserService.updateUser(user);
+        GameUser updated = gameUserService.updateUser(user);
+
+        if (!oldUsername.equals(normalizedUsername)) {
+            scoreService.renamePlayer(oldUsername, normalizedUsername);
+            eloService.renamePlayer(oldUsername, normalizedUsername);
+            ratingService.renamePlayer(oldUsername, normalizedUsername);
+            commentService.renamePlayer(oldUsername, normalizedUsername);
+            em.createQuery("UPDATE GameSession g SET g.playerWhite = :newName WHERE g.playerWhite = :oldName")
+                    .setParameter("newName", normalizedUsername)
+                    .setParameter("oldName", oldUsername)
+                    .executeUpdate();
+            em.createQuery("UPDATE GameSession g SET g.playerBlack = :newName WHERE g.playerBlack = :oldName")
+                    .setParameter("newName", normalizedUsername)
+                    .setParameter("oldName", oldUsername)
+                    .executeUpdate();
+        }
+
+        return updated;
     }
 
     public void changePassword(Long userId, String currentPassword, String newPassword) {

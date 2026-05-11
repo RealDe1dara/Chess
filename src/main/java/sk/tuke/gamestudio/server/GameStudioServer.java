@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import sk.tuke.gamestudio.game.chess.ai.ChessAiPlayer;
 import sk.tuke.gamestudio.service.AuthService;
 import sk.tuke.gamestudio.service.*;
 
@@ -38,7 +39,7 @@ public class GameStudioServer {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(8);
     }
 
     @Bean
@@ -47,8 +48,20 @@ public class GameStudioServer {
     }
 
     @Bean
-    public AuthService authService(GameUserService gameUserService, PasswordEncoder passwordEncoder) {
-        return new AuthService(gameUserService, passwordEncoder);
+    public AuthService authService(GameUserService gameUserService, PasswordEncoder passwordEncoder,
+                                   ScoreService scoreService, EloService eloService,
+                                   RatingService ratingService, CommentService commentService) {
+        return new AuthService(gameUserService, passwordEncoder, scoreService, eloService, ratingService, commentService);
+    }
+
+    @Bean
+    public GameSessionService gameSessionService(ScoreService scoreService, EloService eloService) {
+        return new GameSessionService(scoreService, eloService);
+    }
+
+    @Bean
+    public ChessAiPlayer chessAiPlayer() {
+        return new ChessAiPlayer();
     }
 
 }

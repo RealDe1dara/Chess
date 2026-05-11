@@ -1,51 +1,81 @@
 .main-menu-page {
-  width: min(1120px, 96vw);
-  color: #f1e2d5;
+  width: 100%;
+  color: #ffffff;
+}
+
+.menu-header-bar {
+  width: 100%;
+  background: #1e1c1a;
+  border-bottom: 1px solid #3a3835;
+}
+
+.page-container {
+  width: min(1020px, 88vw);
+  margin: 0 auto;
+}
+
+.menu-header-bar .page-container {
+  padding: 16px 0;
+}
+
+.page-body {
+  padding: 28px 0 48px;
+  display: grid;
+  gap: 16px;
 }
 
 .main-menu-page .menu-grid {
   display: grid;
-  grid-template-columns: 0.9fr 2.1fr;
-  gap: 14px;
+  grid-template-columns: 2fr 3fr;
+  gap: 16px;
   align-items: start;
 }
 
-.main-menu-page .left-column-stack {
-  display: grid;
-  /*gap: 14px;*/
+.main-menu-page .left-tab-panel {
+  background: #262522;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
-.main-menu-page .menu-grid .comments-card {
-  grid-column: 1 / -1;
-}
-
-.main-menu-page .menu-card {
-  border: 1px solid #4d3b2f;
-  border-radius: 16px;
-  padding: 16px 32px;
-  margin-bottom: 16px ;
-  background: #2a1f19;
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.35),
-    0 1px 0 rgba(255, 232, 210, 0.03) inset;
-}
-
-.main-menu-page .menu-card > h2 {
-  margin: 0 0 12px;
-  padding: 8px 0 10px;
+.main-menu-page .last-games-section {
+  background: #262522;
+  border-radius: 6px;
+  padding: 20px 24px;
 }
 
 .main-menu-page .small-btn {
-  border: 1px solid #7c5d49;
-  background: #3f2e24;
-  color: #f1dfd0;
-  border-radius: 10px;
+  border: none;
+  background: #3a3835;
+  color: #d0d0c8;
+  border-radius: 4px;
   padding: 8px 12px;
   cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.main-menu-page .small-btn:hover {
+  background: #454240;
 }
 
 @media (max-width: 900px) {
   .main-menu-page .menu-grid {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 480px) {
+  .page-container {
+    width: min(1020px, 90vw);
+  }
+
+  .page-body {
+    padding: 12px 0 20px;
+    gap: 10px;
+  }
+
+  .main-menu-page .left-tab-panel,
+  .main-menu-page .last-games-section {
+    border-radius: 4px;
+  }
+}
+

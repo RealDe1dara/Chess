@@ -22,7 +22,7 @@ public class Elo implements Serializable {
 
     private String game;
     private String player;
-    private int elo = 100;
+    private int elo = 1000;
 
     public Elo() {}
 

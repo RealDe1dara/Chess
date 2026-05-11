@@ -16,7 +16,7 @@ function CommentsCard({ comments, draft, onDraftChange, onAddComment }: Comments
         {comments.length === 0 ? (
           <p className="empty">No comments yet.</p>
         ) : (
-          comments.slice(0, 6).map((entry) => (
+          comments.slice(0, 50).map((entry) => (
             <article key={entry.ident} className="comment-item">
               <header>
                 <strong>{entry.player}</strong>
@@ -28,8 +28,7 @@ function CommentsCard({ comments, draft, onDraftChange, onAddComment }: Comments
         )}
       </div>
       <label>
-        <span>Add your comment</span>
-        <textarea value={draft} onChange={(event) => onDraftChange(event.target.value)} maxLength={300} />
+        <textarea placeholder={"Write your comment..."} value={draft} onChange={(event) => onDraftChange(event.target.value)} maxLength={300} />
       </label>
       <button type="button" className="small-btn" onClick={onAddComment}>
         Add comment

@@ -36,6 +36,18 @@ public class CommentServiceJPA implements CommentService {
     }
 
     @Override
+    public void renamePlayer(String oldName, String newName) throws CommentException {
+        try {
+            entityManager.createQuery("UPDATE Comment c SET c.player = :newName WHERE c.player = :oldName")
+                    .setParameter("newName", newName)
+                    .setParameter("oldName", oldName)
+                    .executeUpdate();
+        } catch (Exception e) {
+            throw new CommentException("Error renaming player in comments", e);
+        }
+    }
+
+    @Override
     public void reset() throws CommentException {
         try {
             entityManager.createNamedQuery("Comment.resetComments").executeUpdate();

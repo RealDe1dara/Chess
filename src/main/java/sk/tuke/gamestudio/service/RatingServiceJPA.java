@@ -29,7 +29,6 @@ public class RatingServiceJPA implements RatingService {
                 Rating existing = existingRatings.get(0);
                 existing.setRating(rating.getRating());
                 existing.setRatedOn(rating.getRatedOn());
-                entityManager.merge(existing);
             } else {
                 entityManager.persist(rating);
             }
@@ -63,6 +62,18 @@ public class RatingServiceJPA implements RatingService {
             return 0;
         } catch (Exception e) {
             throw new RatingException("Error retrieving rating", e);
+        }
+    }
+
+    @Override
+    public void renamePlayer(String oldName, String newName) throws RatingException {
+        try {
+            entityManager.createQuery("UPDATE Rating r SET r.player = :newName WHERE r.player = :oldName")
+                    .setParameter("newName", newName)
+                    .setParameter("oldName", oldName)
+                    .executeUpdate();
+        } catch (Exception e) {
+            throw new RatingException("Error renaming player in ratings", e);
         }
     }
 

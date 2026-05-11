@@ -10,4 +10,5 @@ public interface ScoreService {
     List<Score> getRecentScores(String game, int limit) throws ScoreException;
     List<Score> getScoresByPlayer(String game, String player, int limit) throws ScoreException;
     void reset() throws ScoreException;
+    default void renamePlayer(String oldName, String newName) throws ScoreException {}
 }

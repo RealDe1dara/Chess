@@ -26,12 +26,11 @@ public class EloServiceRestClient implements EloService {
     }
 
     @Override
-    public int getElo(String game, String player) throws EloException {
+    public Integer getElo(String game, String player) throws EloException {
         try {
-            Integer result = restTemplate.getForObject(url + "/" + game + "/" + player, Integer.class);
-            return result != null ? result : 100;
+            return restTemplate.getForObject(url + "/" + game + "/" + player, Integer.class);
         } catch (Exception e) {
-            return 100;
+            return null;
         }
     }
 

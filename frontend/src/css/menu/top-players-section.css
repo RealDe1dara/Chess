@@ -1,8 +1,8 @@
 .top-players-section h2 {
-  margin: 0 auto;
-  text-align: center;
   font-size: 20px;
-  color: #f8eadc;
+  margin: 0 auto 10px;
+  color: #ffffff;
+  text-align: center;
 }
 
 .top-players-section ol {
@@ -11,51 +11,71 @@
   list-style: none;
 }
 
+.top-players-section .hof-header,
 .top-players-section li {
-  margin: 6px 0;
-  color: #e0cbb9;
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 5px 8px;
-  border-radius: 8px;
+  display: grid;
+  grid-template-columns: 16px 26px 1fr 48px;
+  column-gap: 10px;
+  align-items: center;
+  padding: 4px 8px;
 }
 
-.top-players-section li .player-line {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.top-players-section .hof-header {
+  padding-bottom: 6px;
+  border-bottom: 1px solid #644f40;
+  margin-bottom: 4px;
+  color: #b0a090;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.top-players-section .hof-col-rank { text-align: center; }
+.top-players-section .hof-col-elo  { text-align: right; }
+
+.top-players-section li {
+  margin: 2px 0;
+  color: #ffffff;
+  border-radius: 3px;
+  transition: background 0.15s ease;
+  cursor: default;
+}
+
+.top-players-section li:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .top-players-section li .rank-number {
-  color: #c9b29d;
+  color: #b0b8b0;
   font-size: 13px;
   min-width: 18px;
+  text-align: right;
 }
 
-.top-players-section li .rank-icon {
-  width: 14px;
-  height: 14px;
+.top-players-section li .player-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.top-players-section li .rank-icon.crown {
-  color: #f6c15a;
+.top-players-section li .elo-value {
+  text-align: right;
+  font-weight: 600;
+  color: #ecd7c5;
 }
 
-.top-players-section li .rank-icon.silver {
-  color: #cfd3dc;
-}
+.top-players-section li .rank-icon { width: 14px; height: 14px; }
+.top-players-section li .rank-icon.crown  { color: #d4a830; }
+.top-players-section li .rank-icon.silver { color: #b0b8b0; }
+.top-players-section li .rank-icon.bronze { color: #a07848; }
+.top-players-section li .rank-icon.star   { color: #b0b8b0; }
 
-.top-players-section li .rank-icon.bronze {
-  color: #cf8a5d;
-}
-
-.top-players-section li .rank-icon.star {
-  color: #a58d79;
-}
+.top-players-section li.empty { opacity: 0.35; }
 
 .top-players-section li.me {
-  background: rgba(185, 140, 99, 0.18);
-  border: 1px solid #8f6544;
-  color: #fff1e3;
+  background: rgba(118, 173, 75, 0.1);
+  border: 1px solid #76ad4b;
+  color: #ffffff;
+  border-radius: 3px;
 }

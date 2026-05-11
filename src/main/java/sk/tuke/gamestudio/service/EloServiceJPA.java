@@ -27,13 +27,12 @@ public class EloServiceJPA implements EloService {
 
             // If this is a new player and elo is 0, treat it as default 100
             if (existing.isEmpty() && elo.getElo() == 0) {
-                elo.setElo(100);
+                elo.setElo(1000);
             }
 
             if (!existing.isEmpty()) {
                 Elo current = existing.get(0);
                 current.setElo(elo.getElo());
-                entityManager.merge(current);
             } else {
                 entityManager.persist(elo);
             }
@@ -43,7 +42,7 @@ public class EloServiceJPA implements EloService {
     }
 
     @Override
-    public int getElo(String game, String player) throws EloException {
+    public Integer getElo(String game, String player) throws EloException {
         try {
             List<Elo> results = entityManager
                     .createNamedQuery("Elo.getPlayerElo", Elo.class)
@@ -51,13 +50,21 @@ public class EloServiceJPA implements EloService {
                     .setParameter("player", player)
                     .getResultList();
 
-            if (!results.isEmpty()) {
-                return results.get(0).getElo();
-            }
-            // mirror JDBC behavior: new player starts with 100
-            return 100;
+            return results.isEmpty() ? null : results.get(0).getElo();
         } catch (Exception e) {
             throw new EloException("Problem getting ELO", e);
+        }
+    }
+
+    @Override
+    public void renamePlayer(String oldName, String newName) throws EloException {
+        try {
+            entityManager.createQuery("UPDATE Elo e SET e.player = :newName WHERE e.player = :oldName")
+                    .setParameter("newName", newName)
+                    .setParameter("oldName", oldName)
+                    .executeUpdate();
+        } catch (Exception e) {
+            throw new EloException("Error renaming player in elo", e);
         }
     }
 

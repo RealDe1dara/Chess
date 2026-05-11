@@ -4,15 +4,18 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  color: #ecd7c5;
+  color: #c0c8b8;
   font-size: 14px;
 }
 
 .session-info .logout-btn {
-  border: 1px solid #7c5d49;
-  background: #3f2e24;
-  color: #f1dfd0;
+  border: none;
+  background: #3a3835;
+  color: #ffffff;
   border-radius: 8px;
   padding: 6px 10px;
   cursor: pointer;
+  transition: background 0.15s;
 }
+
+.session-info .logout-btn:hover { background: #454240; }
