@@ -1,3 +1,13 @@
 *.iml
 .idea
 target
+# Maven build folder
+target/
+
+# Node/Frontend dependencies
+frontend/node_modules/
+node_modules/
+
+# OS generated files
+.DS_Store
+Thumbs.db
