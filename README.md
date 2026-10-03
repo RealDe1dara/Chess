@@ -1,57 +1,117 @@
-# GameStudio Readme (SK)
+# Chess
 
-Toto je šablóna projektu GameStudio. Naklonujte si tento projekt a otvorte ho v IntelliJ Idea podľa nižšie uvedeného návodu.
-Všetky súbory ukladajte do toho projektu podľa pokynov.
+Chess is a web-based platform for playing and managing chess games. It combines
+a React frontend, a Spring Boot backend, and a PostgreSQL database to provide a
+complete online chess experience.
 
-## Klonovanie
+## Game modes
 
-Naklonujte si svoj projekt pomocou príkazu:
+Players can choose from several ways to play:
 
-```git clone git@git.kpi.fei.tuke.sk:...```
+- **Online multiplayer** — play against another player in real time over the
+  network.
+- **Local multiplayer** — play against another person on the same device.
+- **Computer opponent** — play against an AI opponent powered by the
+  **Stockfish chess engine**.
 
-V príkaze zameňte URL za SSH URL vášho projektu. Získate ho v GitLab-e.
+## Features
 
+- User registration, login, and profile management.
+- Real-time games with move validation and game-state updates.
+- In-game chat and draw offer handling.
+- Player ratings and Elo rankings.
+- Leaderboards and game results.
+- Comments and community feedback.
 
-## Otvorenie projektu v IntelliJ Idea
+## Requirements
 
-V menu Idey vyberte **File -> Open...**.
-V dialógu pre výber projektov nájdite **pom.xml** v hlavnom adresári vášho naklonovaného projektu a potvrďte.
-Potom vyberte **Open as Project**.
+### Recommended: Docker
 
+- Git
+- Docker and Docker Compose
 
-## Nastavenie projektu
+### Local development
 
-V adresári `src/main/java/sk.tuke.gamestudio.game` si vytvorte nový balík pomenovaný podľa názvu vašej hry.
-Všetky súbory a adresáre vašej hry umiestnite do tohto balíka (napr. `Main.java`, `core`, `consoleui`, atď.).
-Keď budete vytvárať Unit testy, umiestnite ich do balíka `src/test/java/sk.tuke.gamestudio.game.[yourGame]`.
+- Java 17 or later
+- Maven
+- Node.js
+- PostgreSQL
 
-Používajte [štandardnú štruktúru Maven projektov](https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html) a odporúčanú adresárovú štruktúru projektu GameStudio.
+## Running with Docker
 
+Clone the GitHub repository:
 
-# GameStudio Readme (EN)
+```bash
+git clone https://github.com/RealDe1dara/Chess.git
+cd Chess
+```
 
-Template for your GameStudio project. Clone the project and open in IntelliJ Idea. Place all your files into this project.
+Build and start the application and PostgreSQL database:
 
-## Cloning
+```bash
+docker compose up --build
+```
 
-Clone your project using:
+Open [http://localhost:8080](http://localhost:8080) in a browser. To stop the
+services, press `Ctrl+C` or run:
 
-```git clone git@git.kpi.fei.tuke.sk:...```
+```bash
+docker compose down
+```
 
-Replace the url with your project's SSH url. You can get it in GitLab.
+The PostgreSQL data is stored in the `postgres_data` Docker volume, so it
+survives container restarts. To remove the data as well, run:
 
+```bash
+docker compose down -v
+```
 
-## Opening in IntelliJ Idea
+## Local development
 
-In Idea, select **File -> Open...** from the menu.
-In the file selection dialog, find and open your project's **pom.xml**.
-Then select **Open as Project**.
+Start PostgreSQL and create a database named `gamestudio`, then run the Spring
+Boot backend:
 
+```bash
+mvn spring-boot:run
+```
 
-## Project Setup
+In a separate terminal, install the frontend dependencies and start Vite:
 
-Create a new package inside `src/main/java/sk.tuke.gamestudio.game`. Name it after your game.
-Place all files and packages related to your game (e.g. `Main.java`, `core`, `consoleui`, etc.) into this package.
-When creating new unit tests, place them into the `src/test/java/sk.tuke.gamestudio.game.[yourGame]` package.
+```bash
+cd frontend
+npm ci
+npm run dev
+```
 
-Use the [standard Maven directory layout](https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html) and GameStudio recommended directory structure when adding more classes.
+The frontend development server runs at
+[http://localhost:5173](http://localhost:5173).
+
+## Project structure
+
+```text
+src/       Spring Boot backend and chess game logic
+frontend/  React frontend
+design/    Design diagrams and documentation
+```
+
+## Useful commands
+
+Run backend tests:
+
+```bash
+mvn test
+```
+
+Build the frontend:
+
+```bash
+cd frontend
+npm run build
+```
+
+Lint the frontend:
+
+```bash
+cd frontend
+npm run lint
+```
